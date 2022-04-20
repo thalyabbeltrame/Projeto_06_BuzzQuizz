@@ -1,0 +1,131 @@
+.lista-quizzes {
+  width: 72.9861%;
+  /* margin: 146px 0 211px; */
+  margin: 69px 0 211px;
+  /*background-color:darkgrey; apagar*/
+}
+
+.quizzes-usuario-vazio {
+  width: 100%;
+  height: 181px;
+  border: 1px dashed #d4d4d4;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 77px 0;
+}
+
+.quizzes-usuario-vazio > p {
+  width: 250px;
+  /* width: 23.7868696%;
+  max-width: 250px; */
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 23px;
+  text-align: center;
+  margin: 37.5px 0 30px;
+  color: #b9b9b9;
+}
+
+.quizzes-usuario-vazio > button {
+  width: 151px;
+  /* width: 14.3672693%;
+  max-width: 151px; */
+  height: 40px;
+  border: 1px dashed #ec362d;
+  border-radius: 50px;
+  background: #fafafa;
+  margin-bottom: 33px;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 21px;
+  line-height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ec362d;
+  cursor: pointer;
+}
+
+.cabecalho-quizzes-usuario {
+    width: 170px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 65px 0 10px;
+}
+
+.cabecalho-quizzes-usuario > ion-icon {
+    font-size: 31px;
+    color: #EC362D;
+    cursor: pointer;
+}
+
+.lista-quizzes h5 {
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 23px;
+  text-align: start;
+  color: #000000;
+  /* margin: 77px 0 12px; */
+}
+
+.quizzes-usuario {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    row-gap: 12px;
+    column-gap: 1.42721218%;
+    margin-bottom: 48px;
+}
+
+.quizzes-todos {
+  width: 100%;
+  /* height: 374px; */
+  display: flex;
+  /* justify-content: space-between; */
+  flex-wrap: wrap;
+  row-gap: 12px;
+  /*column-gap: 15px;*/
+  column-gap: 1.42721218%;
+  margin-top: 12px;
+}
+
+.quizz {
+  /* width: 340px;*/
+  max-width: 340px;
+  width: 32.3501427%;
+  height: 48.3957219%;
+  max-height: 181px;
+  /* height: 181px; */
+  position: relative;
+  cursor: pointer;
+}
+
+.quizz > img {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%);
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.quizz > h6 {
+  /* width: 301px; */
+  width: 88.5294118%; 
+  font-weight: 400;
+  font-size: 19px;
+  line-height: 22px;
+  text-align: start;
+  color: #ffffff;
+  position: absolute;
+  bottom: 12px;
+  left: 18px;
+}
+
+.ocultar {
+    display: none;
+}
