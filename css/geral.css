@@ -36,3 +36,7 @@ header > h1 {
   color: #ffffff;
   cursor: pointer;
 }
+
+.ocultar {
+  display: none;
+}
