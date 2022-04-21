@@ -54,6 +54,7 @@ main .perguntas {
   background: #ffffff;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
   padding: 27.91px 36.43px;
+  padding-bottom: 12px;
   margin-bottom: 42px;
 }
 
@@ -68,21 +69,23 @@ main .perguntas {
   line-height: 27px;
   color: #ffffff;
   margin-bottom: 20.16px;
+  padding: 0 12px;
 }
 
 .pergunta .respostas {
-  width: 100%;
+  width: 103.5%;
   height: 100%;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .resposta {
   width: 329.91px;
   height: auto;
   display: flex;
+  flex-wrap: wrap;
   flex-direction: column;
   align-items: flex-start;
   font-weight: 700;
@@ -90,13 +93,16 @@ main .perguntas {
   line-height: 23px;
   display: flex;
   color: #000000;
+  word-wrap: break-word;
+  overflow: hidden;
+  margin-bottom: 15px;
 }
 
 .resposta img {
   width: 100%;
   height: 175.2px;
   object-fit: cover;
-  margin-bottom: 12px;
+  margin-bottom: 5px;
 }
 
 .resposta img:hover {
@@ -124,6 +130,7 @@ main .finalizacao {
   padding: 18px;
   background-color: #ffffff;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 57px;
 }
 
 .finalizacao .titulo {
@@ -157,6 +164,40 @@ main .finalizacao {
   margin-right: 18px;
 }
 
+main .navegacao {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.navegacao button {
+  width: 260.38px;
+  height: 52px;
+  border-radius: 15px;
+  font-weight: 400;
+  font-size: 21px;
+  line-height: 25px;
+  border: transparent;
+}
+
+.navegacao button:hover {
+  cursor: pointer;
+  filter: brightness(90%);
+}
+
+.navegacao .reiniciar-btn {
+  background-color: #ec362d;
+  color: #fff5f4;
+  margin-bottom: 16px;
+}
+
+.navegacao .home-btn {
+  background-color: transparent;
+  color: #818181;
+  margin-bottom: 57px;
+}
+
 @media screen and (max-width: 1100px) {
   main .banner {
     height: 142px;
@@ -165,6 +206,10 @@ main .finalizacao {
   main .banner span {
     font-size: 19px;
     line-height: 22px;
+  }
+
+  .pergunta .respostas {
+    width: 101%;
   }
 
   .pergunta {
@@ -178,6 +223,7 @@ main .finalizacao {
     font-size: 19px;
     line-height: 22px;
     margin-bottom: 13px;
+    padding: 0 12px;
   }
 
   .resposta {
@@ -190,6 +236,7 @@ main .finalizacao {
 
   main .finalizacao {
     width: 100%;
+    margin-bottom: 34px;
   }
 
   .finalizacao .titulo {
@@ -209,6 +256,21 @@ main .finalizacao {
     height: auto;
     margin-right: 0;
     margin-bottom: 9px;
+  }
+
+  .navegacao button {
+    width: 219.64px;
+    height: 44px;
+    font-size: 18px;
+    line-height: 21px;
+  }
+
+  .navegacao .reiniciar-btn {
+    margin-bottom: 8px;
+  }
+
+  .navegacao .home-btn {
+    margin-bottom: 34px;
   }
 }
 
