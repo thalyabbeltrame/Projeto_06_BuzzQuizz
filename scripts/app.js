@@ -1,6 +1,6 @@
 // Tela 1 - Lista de quizzes
 const API = 'https://mock-api.driven.com.br/api/v4/buzzquizz';
-let idQuizzUsuario = 8107;
+let idQuizzUsuario = 0000;
 
 obterQuizzes();
 //const idObterQuizzes = setInterval(obterQuizzes, 10000);
@@ -65,9 +65,13 @@ function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
 
 // }
 
-// function criarQuizz(el) {
-
-// }
+function criarQuizz() {
+  const elCriacaoQuizz = document.querySelector(".criacao-quizz");
+  const elListaQuizzes = document.querySelector(".lista-quizzes");
+  
+  elCriacaoQuizz.classList.remove("ocultar");
+  elListaQuizzes.classList.add("ocultar");
+}
 
 // Tela 2 - Página de um quizz
 
@@ -244,3 +248,13 @@ function definirNivel(percentual) {
   }
   return nivelCorreto;
 }
+
+// Tela 3 - Criar um quizz
+
+// function validarInformacoesIniciais() {
+//   const informacoesBasicas = document.querySelector(".informacoes-basicas-quizz");
+
+//   const tituloQuizz = informacoesBasicas.querySelector("input:first-child");
+//   const urlImagem = informacoesBasicas.querySelector("input:nth-child(2)");
+
+// }

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="./css/reset.css" />
     <link rel="stylesheet" href="./css/lista-quizzes.css" />
     <link rel="stylesheet" href="./css/pagina-quizz.css" />
+    <link rel="stylesheet" href="./css/criacao-quizz.css" />
     <link rel="stylesheet" href="./css/geral.css" />
   </head>
   <body>
@@ -20,25 +21,25 @@
     <div class="lista-quizzes ocultar">
       <div class="quizzes-usuario-vazio ocultar">
         <p>Você não criou nenhum quizz ainda :(</p>
-        <button>Criar Quizz</button>
+        <button onclick="criarQuizz()">Criar Quizz</button>
       </div>
       <div class="cabecalho-quizzes-usuario ocultar">
         <h5>Seus Quizzes</h5>
-        <ion-icon name="add-circle-sharp"></ion-icon>
+        <ion-icon name="add-circle-sharp" onclick="criarQuizz()"></ion-icon>
       </div>
       <div class="quizzes-usuario ocultar">
-        <div class="quizz">
+        <!-- <div class="quizz">
           <img src="./images/simpsons.svg" alt="Os Simpsons" />
           <h6>Acerte os personagens corretos dos Simpsons e prove seu amor!</h6>
         </div>
         <div class="quizz">
           <img src="./images/simpsons.svg" alt="Os Simpsons" />
           <h6>Acerte os personagens corretos dos Simpsons e prove seu amor!</h6>
-        </div>
+        </div> -->
       </div>
       <h5>Todos os Quizzes</h5>
       <div class="quizzes-todos">
-        <div class="quizz">
+        <!-- <div class="quizz">
           <img src="./images/simpsons.svg" alt="Os Simpsons" />
           <h6>Acerte os personagens corretos dos Simpsons e prove seu amor!</h6>
         </div>
@@ -61,13 +62,13 @@
         <div class="quizz">
           <img src="./images/simpsons.svg" alt="Os Simpsons" />
           <h6>Acerte os personagens corretos dos Simpsons e prove seu amor!</h6>
-        </div>
+        </div> -->
       </div>
     </div>
     <!-- Fim: Tela 1 - Página de Lista de Quizzes -->
 
     <!-- Início: Tela 2 - Página de um quizz -->
-    <div class="pagina-quizz">
+    <div class="pagina-quizz ocultar">
       <main>
         <div class="banner"></div>
         <ul class="perguntas"></ul>
@@ -76,6 +77,20 @@
     </div>
     <!-- Fim: Tela 2 - Página de um quizz -->
 
+    <!-- Início: Tela 3 - Criação de quizz -->
+    <div class="criacao-quizz">
+      <div class="informacoes-basicas-quizz">
+        <h5>Comece pelo começo</h5>
+        <ul>
+          <li><input type="text" placeholder="Título do seu quizz"></li>
+          <li><input type="text" placeholder="URL da imagem do seu quizz"></li>
+          <li><input type="text" placeholder="Quantidade de perguntas do quizz"></li>
+          <li><input type="text" placeholder="Quantidade de níveis do quizz"></li>
+        </ul>
+        <button>Prosseguir pra criar perguntas</button>
+      </div>
+    </div>
+    <!-- Fim: Tela 3 - Criação de quizz -->
     <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./scripts/app.js"></script>
