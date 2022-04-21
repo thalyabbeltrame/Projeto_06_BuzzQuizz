@@ -23,14 +23,14 @@ function separarQuizzesUsuario(quizzes) {
   quizzes.forEach((el) => {
     if (el.id !== idQuizzUsuario) {
       listaQuizzesTodos += `
-      <div class="quizz">
+      <div class="quizz" name="${el.id}" onclick="abrirQuizz(this)">
         <img src="${el.image}"/>
         <h6>${el.title}</h6>
       </div>
       `;
     } else {
       listaQuizzesUsuario += `
-      <div class="quizz">
+      <div class="quizz" name="${el.id}" onclick="abrirQuizz(this)">
         <img src="${el.image}"/>
         <h6>${el.title}</h6>
       </div>
@@ -72,88 +72,34 @@ function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
 // Tela 2 - Página de um quizz
 
 let nRespostasCorretas = 0;
+let quizzAtualHtml = null;
+let quizzAtual = {};
 
-let exemploQuizz = {
-  id: 8103,
-  title: 'Título do quizz',
-  image: 'https://http.cat/411.jpg',
-  questions: [
-    {
-      title: 'Título da pergunta 1',
-      color: '#123456',
-      answers: [
-        {
-          text: 'Texto da resposta 1',
-          image: 'https://http.cat/411.jpg',
-          isCorrectAnswer: true,
-        },
-        {
-          text: 'Texto da resposta 2',
-          image: 'https://http.cat/412.jpg',
-          isCorrectAnswer: false,
-        },
-      ],
-    },
-    {
-      title: 'Título da pergunta 2',
-      color: '#123456',
-      answers: [
-        {
-          text: 'Texto da resposta 1',
-          image: 'https://http.cat/411.jpg',
-          isCorrectAnswer: true,
-        },
-        {
-          text: 'Texto da resposta 2',
-          image: 'https://http.cat/412.jpg',
-          isCorrectAnswer: false,
-        },
-      ],
-    },
-    {
-      title: 'Título da pergunta 3',
-      color: '#123456',
-      answers: [
-        {
-          text: 'Texto da resposta 1',
-          image: 'https://http.cat/411.jpg',
-          isCorrectAnswer: true,
-        },
-        {
-          text: 'Texto da resposta 2',
-          image: 'https://http.cat/412.jpg',
-          isCorrectAnswer: false,
-        },
-      ],
-    },
-  ],
-  levels: [
-    {
-      title: 'Título do nível 1',
-      image: 'https://http.cat/411.jpg',
-      text: 'Descrição do nível 1',
-      minValue: 0,
-    },
-    {
-      title: 'Título do nível 2',
-      image: 'https://http.cat/412.jpg',
-      text: 'Descrição do nível 2',
-      minValue: 50,
-    },
-  ],
-};
+function abrirQuizz(elemento) {
+  quizzAtualHtml = elemento;
+  idQuizzAtual = elemento.getAttribute('name');
+  axios
+    .get(`${API}/quizzes/${idQuizzAtual}`)
+    .then((resposta) => {
+      quizzAtual = resposta.data;
+      renderizarQuizz(quizzAtual);
+    })
+    .catch((erro) => {
+      console.log(erro);
+    });
+}
 
-abrirQuizz();
+function renderizarQuizz(quizz) {
+  const banner = document.querySelector('.pagina-quizz main .banner');
+  banner.style.background = `linear-gradient(0, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${quizz.image})`;
+  banner.style.backgroundPosition = 'center';
+  banner.style.backgroundSize = 'cover';
+  banner.innerHTML = `<span>${quizz.title}</span>`;
 
-function abrirQuizz() {
-  document.querySelector(
-    '.pagina-quizz main .banner'
-  ).style.background = `linear-gradient(0, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${exemploQuizz.image})`;
-  document.querySelector('.pagina-quizz main .banner').style.backgroundPosition = 'center';
-  document.querySelector('.pagina-quizz main .banner').style.backgroundSize = 'cover';
-  document.querySelector('.pagina-quizz main .banner').innerHTML = `<span>${exemploQuizz.title}</span>`;
+  renderizarPerguntas(quizz.questions);
 
-  renderizarPerguntas(exemploQuizz.questions);
+  document.querySelector('.lista-quizzes').classList.add('ocultar');
+  document.querySelector('.pagina-quizz').classList.remove('ocultar');
 }
 
 function renderizarPerguntas(questoes) {
@@ -217,7 +163,7 @@ function rolarParaProximaPergunta() {
 }
 
 function renderizarResultado() {
-  const nPerguntas = exemploQuizz.questions.length;
+  const nPerguntas = quizzAtual.questions.length;
   const percentualAcerto = Math.round((nRespostasCorretas / nPerguntas) * 100);
   const nivel = definirNivel(percentualAcerto);
   const resultadoHtml = document.querySelector('.pagina-quizz main .finalizacao');
@@ -236,12 +182,12 @@ function renderizarResultado() {
 }
 
 function definirNivel(percentual) {
-  const indiceNivel = exemploQuizz.levels.findIndex((nivel) => percentual < nivel.minValue);
+  const indiceNivel = quizzAtual.levels.findIndex((nivel) => percentual < nivel.minValue);
   let nivelCorreto;
   if (indiceNivel === -1) {
-    nivelCorreto = exemploQuizz.levels[exemploQuizz.levels.length - 1];
+    nivelCorreto = quizzAtual.levels[quizzAtual.levels.length - 1];
   } else {
-    nivelCorreto = exemploQuizz.levels[indiceNivel - 1];
+    nivelCorreto = quizzAtual.levels[indiceNivel - 1];
   }
   return nivelCorreto;
 }
@@ -260,11 +206,11 @@ function renderizarBotoesDeNavegacao() {
 
 function reiniciarQuizz() {
   document.querySelector('.pagina-quizz main .banner').scrollIntoView({
-    block: 'start',
+    block: 'center',
     behavior: 'smooth',
   });
   nRespostasCorretas = 0;
-  abrirQuizz();
+  abrirQuizz(quizzAtualHtml);
   limparResultado();
   limparNavegacao();
 }
@@ -278,6 +224,11 @@ function limparNavegacao() {
 }
 
 function voltarParaHome() {
+  nRespostasCorretas = 0;
+  quizzAtualHtml = null;
+  quizzAtual = {};
+  limparResultado();
+  limparNavegacao();
   document.querySelector('.pagina-quizz').classList.add('ocultar');
   document.querySelector('.lista-quizzes').classList.remove('ocultar');
 }
