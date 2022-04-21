@@ -61,13 +61,9 @@ function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
   }
 }
 
-// function abrirPaginaQuizz(el){
-
-// }
-
-// function criarQuizz(el) {
-
-// }
+function criarQuizz(el) {
+  //
+}
 
 // Tela 2 - Página de um quizz
 
@@ -182,12 +178,13 @@ function renderizarResultado() {
 }
 
 function definirNivel(percentual) {
-  const indiceNivel = quizzAtual.levels.findIndex((nivel) => percentual < nivel.minValue);
+  const niveisOrdenados = quizzAtual.levels.sort((a, b) => a.minValue - b.minValue);
+  const indiceNivel = niveisOrdenados.findIndex((nivel) => percentual < nivel.minValue);
   let nivelCorreto;
   if (indiceNivel === -1) {
-    nivelCorreto = quizzAtual.levels[quizzAtual.levels.length - 1];
+    nivelCorreto = niveisOrdenados[niveisOrdenados.length - 1];
   } else {
-    nivelCorreto = quizzAtual.levels[indiceNivel - 1];
+    nivelCorreto = niveisOrdenados[indiceNivel - 1];
   }
   return nivelCorreto;
 }
@@ -205,7 +202,7 @@ function renderizarBotoesDeNavegacao() {
 }
 
 function reiniciarQuizz() {
-  document.querySelector('.pagina-quizz main .banner').scrollIntoView({
+  document.querySelector('.pagina-quizz main .pergunta').scrollIntoView({
     block: 'center',
     behavior: 'smooth',
   });
@@ -225,10 +222,42 @@ function limparNavegacao() {
 
 function voltarParaHome() {
   nRespostasCorretas = 0;
-  quizzAtualHtml = null;
-  quizzAtual = {};
   limparResultado();
   limparNavegacao();
   document.querySelector('.pagina-quizz').classList.add('ocultar');
   document.querySelector('.lista-quizzes').classList.remove('ocultar');
+}
+
+renderizarFormPerguntas(3); //exemplo de como renderizar 3 perguntas
+
+function renderizarFormPerguntas(nPerguntas) {
+  for (let i = 0; i < nPerguntas; i++) {
+    document.querySelector('.form-perguntas').innerHTML += `
+    <li>
+      <h5>Pergunta ${i + 1}</h5>
+      <ion-icon name="create-outline" onclick="expandirForm(this)"></ion-icon>
+    </li>
+    `;
+  }
+}
+
+function expandirForm(element) {
+  const form = element.parentElement;
+  form.style.flexDirection = 'column';
+  form.style.alignItems = 'flex-start';
+  form.innerHTML = `
+  <h5>${form.querySelector('h5').innerText}</h5>
+  <input type="text" placeholder="Texto da pergunta">
+  <input type="text" placeholder="Cor de fundo da pergunta">
+  <h5>Resposta correta</h5>
+  <input type="text" placeholder="Resposta correta">
+  <input type="text" placeholder="URL da imagem">
+  <h5>Respostas incorretas</h5>
+  <input type="text" placeholder="Resposta incorreta 1">
+  <input type="text" class="url" placeholder="URL da imagem 1">
+  <input type="text" placeholder="Resposta incorreta 2">
+  <input type="text" class="url" placeholder="URL da imagem 2">
+  <input type="text" placeholder="Resposta incorreta 3">
+  <input type="text" class="url" placeholder="URL da imagem 3">
+  `;
 }
