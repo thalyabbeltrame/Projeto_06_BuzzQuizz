@@ -1,4 +1,73 @@
 // Tela 1 - Lista de quizzes
+const API = "https://mock-api.driven.com.br/api/v4/buzzquizz";
+let idQuizzUsuario = 8107;
+
+obterQuizzes();
+//const idObterQuizzes = setInterval(obterQuizzes, 10000);
+
+function obterQuizzes() {
+  const promise = axios.get(`${API}/quizzes`);
+  promise.then((response) => {
+    console.log("Consegui obter os quizzes da API!");
+    separarQuizzesUsuario(response.data);
+  });
+  promise.catch(() => {
+    console.log("Não consegui obter os quizzes da API!");
+  });
+}
+
+function separarQuizzesUsuario(quizzes) {
+  let listaQuizzesTodos = "";
+  let listaQuizzesUsuario = "";
+
+  quizzes.forEach((el) => {
+    if(el.id !== idQuizzUsuario) {
+      listaQuizzesTodos += `
+      <div class="quizz">
+        <img src="${el.image}"/>
+        <h6>${el.title}</h6>
+      </div>
+      `;    
+    } else {
+      listaQuizzesUsuario += `
+      <div class="quizz">
+        <img src="${el.image}"/>
+        <h6>${el.title}</h6>
+      </div>
+      `;  
+    }
+  });
+  renderizarListaQuizzes(listaQuizzesUsuario, listaQuizzesTodos);
+}
+
+function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
+  console.log("Entrei em renderizar!");
+  const elUsuarioVazio = document.querySelector(".quizzes-usuario-vazio");
+  const elCabecalhoUsuario = document.querySelector(".cabecalho-quizzes-usuario");
+  const elQuizzesUsuario = document.querySelector(".quizzes-usuario");
+  const elQuizzesTodos = document.querySelector(".quizzes-todos");
+
+  elQuizzesTodos.innerHTML = quizzesTodos;
+
+  if(quizzesUsuario !== "") {
+    elUsuarioVazio.classList.add("ocultar");
+    elQuizzesUsuario.innerHTML = quizzesUsuario;
+    elQuizzesUsuario.classList.remove("ocultar");
+    elCabecalhoUsuario.classList.remove("ocultar");  
+  } else if ((quizzesUsuario === "") && (elUsuarioVazio.classList.contains("ocultar") === true)) {
+    elUsuarioVazio.classList.remove("ocultar");
+    elQuizzesUsuario.classList.add("ocultar");
+    elCabecalhoUsuario.classList.add("ocultar");
+  }
+}
+
+// function abrirPaginaQuizz(el){
+
+// }
+
+// function criarQuizz(el) {
+
+// } 
 
 // Tela 2 - Página de um quizz
 
