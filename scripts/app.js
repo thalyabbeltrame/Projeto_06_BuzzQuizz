@@ -105,7 +105,7 @@ function renderizaAsRespostas(respostas) {
   respostasEmbaralhadas.forEach((resposta) => {
     const corretaOuIncorreta = resposta.isCorrectAnswer ? 'correta' : 'incorreta';
     respostasHtml += `
-    <li class="resposta ${corretaOuIncorreta}">
+    <li class="resposta ${corretaOuIncorreta}" onclick="selecionarResposta(this)">
         <img src="${resposta.image}">
         <span>${resposta.text}</span>
     </li>`;
@@ -115,4 +115,24 @@ function renderizaAsRespostas(respostas) {
 
 function embaralhaRespostas(respostas) {
   return respostas.sort(() => Math.random() - 0.5);
+}
+
+function selecionarResposta(element) {
+  element.parentElement.parentElement.classList.add('selecionada');
+  const listaDeRespostas = element.parentElement.querySelectorAll('.resposta');
+  listaDeRespostas.forEach((resposta) => {
+    resposta.removeAttribute('onclick');
+    resposta.classList.add('mostrar');
+    if (resposta !== element) resposta.classList.add('opaca');
+  });
+  rolarParaProximaPergunta();
+}
+
+function rolarParaProximaPergunta() {
+  setTimeout(() => {
+    const perguntaAtual = document.querySelector('.pergunta.selecionada');
+    const proximaPergunta = perguntaAtual.nextElementSibling;
+    if (proximaPergunta !== null) proximaPergunta.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    perguntaAtual.classList.remove('selecionada');
+  }, 2000);
 }
