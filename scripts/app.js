@@ -211,6 +211,7 @@ function rolarParaProximaPergunta() {
     proximaPergunta.scrollIntoView({ block: 'center', behavior: 'smooth' });
   } else {
     renderizarResultado();
+    renderizarBotoesDeNavegacao();
   }
   perguntaAtual.classList.remove('selecionada');
 }
@@ -243,4 +244,40 @@ function definirNivel(percentual) {
     nivelCorreto = exemploQuizz.levels[indiceNivel - 1];
   }
   return nivelCorreto;
+}
+
+function renderizarBotoesDeNavegacao() {
+  const navegacao = document.querySelector('.pagina-quizz main .navegacao');
+  navegacao.innerHTML = `
+  <button class="reiniciar-btn" onclick="reiniciarQuizz()">
+    <span>Reiniciar Quizz</span>
+  </button>
+  <button class="home-btn" onclick="voltarParaHome()">
+    <span>Voltar para home</span>
+  </button>
+  `;
+}
+
+function reiniciarQuizz() {
+  document.querySelector('.pagina-quizz main .banner').scrollIntoView({
+    block: 'start',
+    behavior: 'smooth',
+  });
+  nRespostasCorretas = 0;
+  abrirQuizz();
+  limparResultado();
+  limparNavegacao();
+}
+
+function limparResultado() {
+  document.querySelector('.pagina-quizz main .finalizacao').innerHTML = '';
+}
+
+function limparNavegacao() {
+  document.querySelector('.pagina-quizz main .navegacao').innerHTML = '';
+}
+
+function voltarParaHome() {
+  document.querySelector('.pagina-quizz').classList.add('ocultar');
+  document.querySelector('.lista-quizzes').classList.remove('ocultar');
 }
