@@ -186,12 +186,13 @@ function renderizarResultado() {
 }
 
 function definirNivel(percentual) {
-  const indiceNivel = quizzAtual.levels.findIndex((nivel) => percentual < nivel.minValue);
+  const niveisOrdenados = quizzAtual.levels.sort((a, b) => a.minValue - b.minValue);
+  const indiceNivel = niveisOrdenados.findIndex((nivel) => percentual < nivel.minValue);
   let nivelCorreto;
   if (indiceNivel === -1) {
-    nivelCorreto = quizzAtual.levels[quizzAtual.levels.length - 1];
+    nivelCorreto = niveisOrdenados[niveisOrdenados.length - 1];
   } else {
-    nivelCorreto = quizzAtual.levels[indiceNivel - 1];
+    nivelCorreto = niveisOrdenados[indiceNivel - 1];
   }
   return nivelCorreto;
 }
@@ -209,9 +210,9 @@ function renderizarBotoesDeNavegacao() {
 }
 
 function reiniciarQuizz() {
-  document.querySelector(".pagina-quizz main .banner").scrollIntoView({
-    block: "center",
-    behavior: "smooth",
+  document.querySelector('.pagina-quizz main .pergunta').scrollIntoView({
+    block: 'center',
+    behavior: 'smooth',
   });
   nRespostasCorretas = 0;
   abrirQuizz(quizzAtualHtml);
@@ -229,8 +230,6 @@ function limparNavegacao() {
 
 function voltarParaHome() {
   nRespostasCorretas = 0;
-  quizzAtualHtml = null;
-  quizzAtual = {};
   limparResultado();
   limparNavegacao();
   document.querySelector(".pagina-quizz").classList.add("ocultar");
@@ -278,3 +277,86 @@ function validaURLInicioEFim(stringURL) {
   }
   return false;
 }
+
+renderizarFormPerguntas(3); //exemplo de como renderizar 3 perguntas
+
+function renderizarFormPerguntas(nPerguntas) {
+  for (let i = 0; i < nPerguntas; i++) {
+    document.querySelector('.criacao-perguntas-quizz div').innerHTML += `
+    <div>
+      <h4>Pergunta ${i + 1}</h4>
+      <ion-icon name="create-outline" onclick="expandirFormPerguntas(this)"></ion-icon>
+    </div>
+    `;
+  }
+}
+
+function expandirFormPerguntas(element) {
+  const form = element.parentElement;
+  alterarFlexDirection(form, 'column');
+  form.innerHTML = `
+  <h4>${form.querySelector('h4').innerText}</h4>
+  <ul>
+    <li><input type="text" placeholder="Texto da pergunta"></li>
+    <li><input type="text" placeholder="Cor de fundo da pergunta"></li>
+  </ul>
+  <h4>Resposta correta</h4>
+  <ul>
+    <li><input type="text" placeholder="Resposta correta"></li>
+    <li><input type="text" placeholder="URL da imagem"></li>
+  </ul>
+  <h4>Respostas incorretas</h4>
+  <ul>
+    <li><input type="text" placeholder="Resposta incorreta 1"></li>
+    <li><input type="text" placeholder="URL da imagem 1"></li>
+    <li><input type="text" placeholder="Resposta incorreta 2">
+    <li><input type="text" placeholder="URL da imagem 2"></li>
+    <li><input type="text" placeholder="Resposta incorreta 3">
+    <li><input type="text" placeholder="URL da imagem 3"></li>
+  </ul>
+  `;
+}
+
+function alterarFlexDirection(element, flexDirection) {
+  element.style.flexDirection = flexDirection;
+  element.style.alignItems = 'flex-start';
+}
+
+renderizarFormNiveis(3); //exemplo de como renderizar 3 níveis
+
+function renderizarFormNiveis(nNiveis) {
+  for (let i = 0; i < nNiveis; i++) {
+    document.querySelector('.criacao-niveis-quizz div').innerHTML += `
+    <div>
+      <h4>Nível ${i + 1}</h4>
+      <ion-icon name="create-outline" onclick="expandirFormNiveis(this)"></ion-icon>
+    </div>
+    `;
+  }
+}
+
+function expandirFormNiveis(element) {
+  const form = element.parentElement;
+  alterarFlexDirection(form, 'column');
+  form.innerHTML = `
+  <h4>${form.querySelector('h4').innerText}</h4>
+  <ul>
+    <li><input type="text" placeholder="Título do nível"></li>
+    <li><input type="text" placeholder="% de acerto mínima"></li>
+    <li><input type="text" placeholder="URL da imagem do nível">
+    <li><input type="text" class="descricao-nivel" placeholder="Descrição do nível"></li>
+  </ul>
+  `;
+}
+
+// renderizarSucessoQuizz();
+
+// function renderizarSucessoQuizz() {
+//   const sucessoQuizz = document.querySelector('.sucesso-quizz');
+//   sucessoQuizz.innerHTML = `
+//   <h5>Seu quizz está pronto!</h5>
+//   <div></div>
+//   <button class="reiniciar-btn" onclick="acessarQuizz()">Acessar Quizz</button>
+//   <button class="home-btn" onclick="voltarParaHome()">Voltar para home</button>
+//   `;
+// }
