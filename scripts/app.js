@@ -210,9 +210,9 @@ function renderizarBotoesDeNavegacao() {
 }
 
 function reiniciarQuizz() {
-  document.querySelector('.pagina-quizz main .pergunta').scrollIntoView({
-    block: 'center',
-    behavior: 'smooth',
+  document.querySelector(".pagina-quizz main .pergunta").scrollIntoView({
+    block: "center",
+    behavior: "smooth",
   });
   nRespostasCorretas = 0;
   abrirQuizz(quizzAtualHtml);
@@ -240,49 +240,102 @@ function voltarParaHome() {
 
 function coletarInformacoesIniciais() {
   const informacoesBasicas = document.querySelector(".informacoes-basicas-quizz");
-
   const tituloQuizz = informacoesBasicas.querySelector(".titulo-quizz").value;
   const urlImagem = informacoesBasicas.querySelector(".url-imagem").value;
   const perguntasQuizz = informacoesBasicas.querySelector(".perguntas-quizz").value;
   const niveisQuizz = informacoesBasicas.querySelector(".niveis-quizz").value;
 
-  validarInformacoesIniciais(tituloQuizz, urlImagem, perguntasQuizz, niveisQuizz);
-}
+  let novoQuizz = {
+    title: "",
+    image: "",
+    questions: [
+      {
+        title: "",
+        color: "",
+        answers: [
+          {
+            text: "",
+            image: "",
+            isCorrectAnswer: true,
+          },
+          {
+            text: "",
+            image: "",
+            isCorrectAnswer: false,
+          },
+        ],
+      },
+    ],
+    levels: [
+      {
+        title: "",
+        image: "",
+        text: "",
+        minValue: 0,
+      },
+    ],
+  };
 
-function validarInformacoesIniciais(titulo, url, qtdPerguntas, qtdNiveis) {
-  const condicaoTitulo = (titulo.length !== "") && (titulo.length >= 20) && (titulo.length <= 65) && (isNaN(titulo) === true);
-  const condicaoURL = (url !== "") && urlValida(url) && validaURLInicioEFim(url);
-  const condicaoPerguntas = (qtdPerguntas !== "") && (parseInt(qtdPerguntas) >= 3) && (Number(qtdPerguntas) % 1 === 0);
-  const condicaoNiveis = (qtdNiveis !== "") && (parseInt(qtdNiveis) >= 2) && (Number(qtdNiveis) % 1 === 0);
-
-  if((condicaoTitulo === true) && (condicaoURL === true) && (condicaoPerguntas === true) && (condicaoNiveis === true)) {
-    alert("Dados preenchidos corretamente"); //Mudar para a tela 3.2 de criação de um quizz  
+  if (validarInformacoesIniciais(tituloQuizz, urlImagem, perguntasQuizz, niveisQuizz)) {
+    novoQuizz.title = tituloQuizz;
+    novoQuizz.image = urlImagem;
+    renderizarFormPerguntas(parseInt(perguntasQuizz));
+    renderizarFormNiveis(parseInt(niveisQuizz));
+    informacoesBasicas.classList.add("ocultar");
+    abrirCriacaoPerguntas(novoQuizz);
   } else {
     alert("Entrada(s) inválida(s)! Por favor, preencha os dados corretamente.");
   }
 }
 
+function validarInformacoesIniciais(titulo, url, qtdPerguntas, qtdNiveis) {
+  const condicaoTitulo = titulo.length !== "" && titulo.length >= 20 && titulo.length <= 65 && isNaN(titulo) === true;
+  const condicaoURL = url !== "" && urlValida(url) && validaURLInicioEFim(url);
+  const condicaoPerguntas = qtdPerguntas !== "" && parseInt(qtdPerguntas) >= 3 && Number(qtdPerguntas) % 1 === 0;
+  const condicaoNiveis = qtdNiveis !== "" && parseInt(qtdNiveis) >= 2 && Number(qtdNiveis) % 1 === 0;
+
+  if (condicaoTitulo === true && condicaoURL === true && condicaoPerguntas === true && condicaoNiveis === true) {
+    return true;
+    //alert("Dados preenchidos corretamente");
+  }
+  return false;
+}
+
 function urlValida(strURL) {
   console.log("Entrei em urlValida!");
-  let res = strURL.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
-  return (res !== null)
+  let res = strURL.match(
+    /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
+  );
+  return res !== null;
 }
 
 function validaURLInicioEFim(stringURL) {
   console.log("Entrei em urlHTTP!");
   const condicaoStartsWith = stringURL.startsWith("http://") || stringURL.startsWith("https://");
-  const condicaoEndsWith = stringURL.endsWith(".jpg") || stringURL.endsWith(".jpeg") || stringURL.endsWith(".png") || stringURL.endsWith(".gif");  
-  if(condicaoStartsWith && condicaoEndsWith) {
+  const condicaoEndsWith =
+    stringURL.endsWith(".jpg") ||
+    stringURL.endsWith(".jpeg") ||
+    stringURL.endsWith(".png") ||
+    stringURL.endsWith(".gif");
+  if (condicaoStartsWith && condicaoEndsWith) {
     return true;
   }
   return false;
 }
 
-renderizarFormPerguntas(3); //exemplo de como renderizar 3 perguntas
+function abrirCriacaoPerguntas(objeto) {
+  const criacaoPerguntasQuizz = document.querySelector(".criacao-perguntas-quizz");
+  criacaoPerguntasQuizz.classList.remove("ocultar");
+  //Continuar com a validação dos inputs de Criação Perguntas
+}
+
+//renderizarFormPerguntas(3); //exemplo de como renderizar 3 perguntas
 
 function renderizarFormPerguntas(nPerguntas) {
+  document.querySelector(".criacao-perguntas-quizz div").innerHTML = "";
+
   for (let i = 0; i < nPerguntas; i++) {
-    document.querySelector('.criacao-perguntas-quizz div').innerHTML += `
+    document.querySelector(".criacao-perguntas-quizz div").innerHTML += `
     <div>
       <h4>Pergunta ${i + 1}</h4>
       <ion-icon name="create-outline" onclick="expandirFormPerguntas(this)"></ion-icon>
@@ -293,9 +346,9 @@ function renderizarFormPerguntas(nPerguntas) {
 
 function expandirFormPerguntas(element) {
   const form = element.parentElement;
-  alterarFlexDirection(form, 'column');
+  alterarFlexDirection(form, "column");
   form.innerHTML = `
-  <h4>${form.querySelector('h4').innerText}</h4>
+  <h4>${form.querySelector("h4").innerText}</h4>
   <ul>
     <li><input type="text" placeholder="Texto da pergunta"></li>
     <li><input type="text" placeholder="Cor de fundo da pergunta"></li>
@@ -319,14 +372,16 @@ function expandirFormPerguntas(element) {
 
 function alterarFlexDirection(element, flexDirection) {
   element.style.flexDirection = flexDirection;
-  element.style.alignItems = 'flex-start';
+  element.style.alignItems = "flex-start";
 }
 
-renderizarFormNiveis(3); //exemplo de como renderizar 3 níveis
+//renderizarFormNiveis(3); //exemplo de como renderizar 3 níveis
 
 function renderizarFormNiveis(nNiveis) {
+  document.querySelector(".criacao-niveis-quizz div").innerHTML = "";
+
   for (let i = 0; i < nNiveis; i++) {
-    document.querySelector('.criacao-niveis-quizz div').innerHTML += `
+    document.querySelector(".criacao-niveis-quizz div").innerHTML += `
     <div>
       <h4>Nível ${i + 1}</h4>
       <ion-icon name="create-outline" onclick="expandirFormNiveis(this)"></ion-icon>
@@ -337,9 +392,9 @@ function renderizarFormNiveis(nNiveis) {
 
 function expandirFormNiveis(element) {
   const form = element.parentElement;
-  alterarFlexDirection(form, 'column');
+  alterarFlexDirection(form, "column");
   form.innerHTML = `
-  <h4>${form.querySelector('h4').innerText}</h4>
+  <h4>${form.querySelector("h4").innerText}</h4>
   <ul>
     <li><input type="text" placeholder="Título do nível"></li>
     <li><input type="text" placeholder="% de acerto mínima"></li>
