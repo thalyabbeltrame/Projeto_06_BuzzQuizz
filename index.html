@@ -18,7 +18,7 @@
     </header>
 
     <!-- Início: Tela 1 - Página de Lista de Quizzes -->
-    <div class="lista-quizzes ocultar">
+    <div class="lista-quizzes">
       <div class="quizzes-usuario-vazio ocultar">
         <p>Você não criou nenhum quizz ainda :(</p>
         <button onclick="criarQuizz()">Criar Quizz</button>
@@ -79,14 +79,14 @@
     <!-- Fim: Tela 2 - Página de um quizz -->
 
     <!-- Início: Tela 3 - Criação de quizz -->
-    <div class="criacao-quizz">
+    <div class="criacao-quizz ocultar">
       <div class="informacoes-basicas-quizz">
         <h5>Comece pelo começo</h5>
         <ul>
-          <li><input type="text" placeholder="Título do seu quizz" class="titulo-quizz"></li>
-          <li><input type="url" placeholder="URL da imagem do seu quizz" class="url-imagem"></li>
-          <li><input type="text" placeholder="Quantidade de perguntas do quizz" class="perguntas-quizz"></li>
-          <li><input type="text" placeholder="Quantidade de níveis do quizz" class="niveis-quizz"></li>
+          <li><input type="text" placeholder="Título do seu quizz" class="titulo-quizz" /></li>
+          <li><input type="url" placeholder="URL da imagem do seu quizz" class="url-imagem" /></li>
+          <li><input type="text" placeholder="Quantidade de perguntas do quizz" class="perguntas-quizz" /></li>
+          <li><input type="text" placeholder="Quantidade de níveis do quizz" class="niveis-quizz" /></li>
           <!-- <li><input type="text" placeholder="Título do seu quizz" /></li>
           <li><input type="text" placeholder="URL da imagem do seu quizz" /></li>
           <li><input type="text" placeholder="Quantidade de perguntas do quizz" /></li>
@@ -94,17 +94,17 @@
         </ul>
         <button onclick="coletarInformacoesIniciais()">Prosseguir pra criar perguntas</button>
       </div>
-      <div class="criacao-perguntas-quizz">
+      <div class="criacao-perguntas-quizz ocultar">
         <h5>Crie suas perguntas</h5>
         <div class="bloco-perguntas"></div>
         <button>Prosseguir pra criar níveis</button>
       </div>
-      <div class="criacao-niveis-quizz">
+      <div class="criacao-niveis-quizz ocultar">
         <h5>Agora, decida os níveis!</h5>
         <div class="bloco-niveis"></div>
         <button>Finalizar quizz</button>
       </div>
-      <div class="sucesso-quizz"></div>
+      <div class="sucesso-quizz ocultar"></div>
     </div>
     <!-- Fim: Tela 3 - Criação de quizz -->
     <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
