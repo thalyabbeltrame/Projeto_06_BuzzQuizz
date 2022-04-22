@@ -252,16 +252,15 @@ function renderizarFormPerguntas(nPerguntas) {
     document.querySelector('.criacao-perguntas-quizz div').innerHTML += `
     <div>
       <h4>Pergunta ${i + 1}</h4>
-      <ion-icon name="create-outline" onclick="expandirForm(this)"></ion-icon>
+      <ion-icon name="create-outline" onclick="expandirFormPerguntas(this)"></ion-icon>
     </div>
     `;
   }
 }
 
-function expandirForm(element) {
+function expandirFormPerguntas(element) {
   const form = element.parentElement;
-  form.style.flexDirection = 'column';
-  form.style.alignItems = 'flex-start';
+  alterarFlexDirection(form, 'column');
   form.innerHTML = `
   <h4>${form.querySelector('h4').innerText}</h4>
   <ul>
@@ -276,11 +275,55 @@ function expandirForm(element) {
   <h4>Respostas incorretas</h4>
   <ul>
     <li><input type="text" placeholder="Resposta incorreta 1"></li>
-    <li><input type="text" class="url" placeholder="URL da imagem 1"></li>
+    <li><input type="text" placeholder="URL da imagem 1"></li>
     <li><input type="text" placeholder="Resposta incorreta 2">
-    <li><input type="text" class="url" placeholder="URL da imagem 2"></li>
+    <li><input type="text" placeholder="URL da imagem 2"></li>
     <li><input type="text" placeholder="Resposta incorreta 3">
-    <li><input type="text" class="url" placeholder="URL da imagem 3"></li>
+    <li><input type="text" placeholder="URL da imagem 3"></li>
   </ul>
   `;
 }
+
+function alterarFlexDirection(element, flexDirection) {
+  element.style.flexDirection = flexDirection;
+  element.style.alignItems = 'flex-start';
+}
+
+renderizarFormNiveis(3); //exemplo de como renderizar 3 níveis
+
+function renderizarFormNiveis(nNiveis) {
+  for (let i = 0; i < nNiveis; i++) {
+    document.querySelector('.criacao-niveis-quizz div').innerHTML += `
+    <div>
+      <h4>Nível ${i + 1}</h4>
+      <ion-icon name="create-outline" onclick="expandirFormNiveis(this)"></ion-icon>
+    </div>
+    `;
+  }
+}
+
+function expandirFormNiveis(element) {
+  const form = element.parentElement;
+  alterarFlexDirection(form, 'column');
+  form.innerHTML = `
+  <h4>${form.querySelector('h4').innerText}</h4>
+  <ul>
+    <li><input type="text" placeholder="Título do nível"></li>
+    <li><input type="text" placeholder="% de acerto mínima"></li>
+    <li><input type="text" placeholder="URL da imagem do nível">
+    <li><input type="text" class="descricao-nivel" placeholder="Descrição do nível"></li>
+  </ul>
+  `;
+}
+
+// renderizarSucessoQuizz();
+
+// function renderizarSucessoQuizz() {
+//   const sucessoQuizz = document.querySelector('.sucesso-quizz');
+//   sucessoQuizz.innerHTML = `
+//   <h5>Seu quizz está pronto!</h5>
+//   <div></div>
+//   <button class="reiniciar-btn" onclick="acessarQuizz()">Acessar Quizz</button>
+//   <button class="home-btn" onclick="voltarParaHome()">Voltar para home</button>
+//   `;
+// }
