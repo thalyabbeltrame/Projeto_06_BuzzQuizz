@@ -13,6 +13,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 header {
@@ -38,5 +39,5 @@ header > h1 {
 }
 
 .ocultar {
-  display: none;
+  display: none !important;
 }
