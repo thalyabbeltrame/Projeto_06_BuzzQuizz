@@ -1,15 +1,14 @@
 const API = 'https://mock-api.driven.com.br/api/v4/buzzquizz';
+const GRAD_IMG_QUIZZ = '180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%';
+const GRAD_IMG_BANNER = '0, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)';
+const OPCOES_SCROLL = { block: 'start', behavior: 'smooth' };
 
-// Variáveis globais - Tela 1
-let idQuizzUsuario = 0000;
-
-// Variáveis globais - Tela 2
+let idQuizzUsuario = null;
 let nRespostasCorretas = 0;
-let quizzAtualHtml = null;
+let elQuizzAtual = null;
 let quizzAtual = {};
 
 obterQuizzes();
-//const idObterQuizzes = setInterval(obterQuizzes, 10000);
 
 function obterQuizzes() {
   const promise = axios.get(`${API}/quizzes`);
@@ -30,14 +29,23 @@ function separarQuizzesUsuario(quizzes) {
     if (el.id !== idQuizzUsuario) {
       listaQuizzesTodos += `
       <div class="quizz" name="${el.id}" onclick="abrirQuizz(this)">
-        <img src="${el.image}"/>
+        <div class="imagem" style="
+          background: linear-gradient(${GRAD_IMG_QUIZZ}), url(${el.image}); 
+          background-position: center; 
+          background-size: cover">
+        </div>
         <h6>${el.title}</h6>
       </div>
       `;
     } else {
       listaQuizzesUsuario += `
       <div class="quizz" name="${el.id}" onclick="abrirQuizz(this)">
-        <img src="${el.image}"/>
+        <div class="imagem" 
+          style="
+          background: linear-gradient(${GRAD_IMG_QUIZZ}), url(${el.image}); 
+          background-position: center; 
+          background-size: cover">
+        </div>
         <h6>${el.title}</h6>
       </div>
       `;
@@ -47,7 +55,6 @@ function separarQuizzesUsuario(quizzes) {
 }
 
 function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
-  console.log('Entrei em renderizar!');
   const elUsuarioVazio = document.querySelector('.quizzes-usuario-vazio');
   const elCabecalhoUsuario = document.querySelector('.cabecalho-quizzes-usuario');
   const elQuizzesUsuario = document.querySelector('.quizzes-usuario');
@@ -67,10 +74,6 @@ function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
   }
 }
 
-// function abrirPaginaQuizz(el){
-
-// }
-
 function criarQuizz() {
   const elCriacaoQuizz = document.querySelector('.criacao-quizz');
   const elListaQuizzes = document.querySelector('.lista-quizzes');
@@ -80,7 +83,7 @@ function criarQuizz() {
 }
 
 function abrirQuizz(elemento) {
-  quizzAtualHtml = elemento;
+  elQuizzAtual = elemento;
   idQuizzAtual = elemento.getAttribute('name');
   axios
     .get(`${API}/quizzes/${idQuizzAtual}`)
@@ -95,16 +98,18 @@ function abrirQuizz(elemento) {
 
 function renderizarQuizz(quizz) {
   const banner = document.querySelector('.pagina-quizz main .banner');
-  banner.style.background = `linear-gradient(0, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${quizz.image})`;
+  const elListaQuizzes = document.querySelector('.lista-quizzes');
+  const elPaginaQuizz = document.querySelector('.pagina-quizz');
+  banner.style.background = `linear-gradient(${GRAD_IMG_BANNER}), url(${quizz.image})`;
   banner.style.backgroundPosition = 'center';
   banner.style.backgroundSize = 'cover';
   banner.innerHTML = `<span>${quizz.title}</span>`;
 
   renderizarPerguntas(quizz.questions);
 
-  document.querySelector('.lista-quizzes').classList.add('ocultar');
-  document.querySelector('.pagina-quizz').classList.remove('ocultar');
-  banner.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  elListaQuizzes.classList.add('ocultar');
+  elPaginaQuizz.classList.remove('ocultar');
+  banner.scrollIntoView(OPCOES_SCROLL);
 }
 
 function renderizarPerguntas(questoes) {
@@ -123,16 +128,16 @@ function renderizarPerguntas(questoes) {
 
 function renderizarRespostas(respostas) {
   const respostasEmbaralhadas = embaralharRespostas(respostas);
-  let respostasHtml = '';
+  let elRespostas = '';
   respostasEmbaralhadas.forEach((resposta) => {
     const corretaOuIncorreta = resposta.isCorrectAnswer ? 'correta' : 'incorreta';
-    respostasHtml += `
+    elRespostas += `
     <li class="resposta ${corretaOuIncorreta}" onclick="selecionarResposta(this)">
         <img src="${resposta.image}">
         <span>${resposta.text}</span>
     </li>`;
   });
-  return respostasHtml;
+  return elRespostas;
 }
 
 function embaralharRespostas(respostas) {
@@ -159,7 +164,7 @@ function rolarParaProximaPergunta() {
   const perguntaAtual = document.querySelector('.pergunta.selecionada');
   const proximaPergunta = perguntaAtual.nextElementSibling;
   if (proximaPergunta !== null) {
-    proximaPergunta.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    proximaPergunta.scrollIntoView(OPCOES_SCROLL);
   } else {
     renderizarResultado();
     renderizarBotoesDeNavegacao();
@@ -171,8 +176,8 @@ function renderizarResultado() {
   const nPerguntas = quizzAtual.questions.length;
   const percentualAcerto = Math.round((nRespostasCorretas / nPerguntas) * 100);
   const nivel = definirNivel(percentualAcerto);
-  const resultadoHtml = document.querySelector('.pagina-quizz main .finalizacao');
-  resultadoHtml.innerHTML = `
+  const elResultado = document.querySelector('.pagina-quizz main .finalizacao');
+  elResultado.innerHTML = `
   <div class="titulo">
     <span>${percentualAcerto}% de acerto: ${nivel.title}</span>
   </div>
@@ -183,7 +188,7 @@ function renderizarResultado() {
     </div>
   </div>
   `;
-  resultadoHtml.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  elResultado.scrollIntoView(OPCOES_SCROLL);
 }
 
 function definirNivel(percentual) {
@@ -211,12 +216,9 @@ function renderizarBotoesDeNavegacao() {
 }
 
 function reiniciarQuizz() {
-  document.querySelector(".pagina-quizz main .pergunta").scrollIntoView({
-    block: "center",
-    behavior: "smooth",
-  });
+  document.querySelector('.pagina-quizz main .pergunta').scrollIntoView(OPCOES_SCROLL);
   nRespostasCorretas = 0;
-  abrirQuizz(quizzAtualHtml);
+  abrirQuizz(elQuizzAtual);
   limparResultado();
   limparNavegacao();
 }
@@ -237,31 +239,29 @@ function voltarParaHome() {
   document.querySelector('.lista-quizzes').classList.remove('ocultar');
 }
 
-// Tela 3 - Criar um quizz
-
 function coletarInformacoesIniciais() {
-  const informacoesBasicas = document.querySelector(".informacoes-basicas-quizz");
-  const tituloQuizz = informacoesBasicas.querySelector(".titulo-quizz").value;
-  const urlImagem = informacoesBasicas.querySelector(".url-imagem").value;
-  const perguntasQuizz = informacoesBasicas.querySelector(".perguntas-quizz").value;
-  const niveisQuizz = informacoesBasicas.querySelector(".niveis-quizz").value;
+  const informacoesBasicas = document.querySelector('.informacoes-basicas-quizz');
+  const tituloQuizz = informacoesBasicas.querySelector('.titulo-quizz').value;
+  const urlImagem = informacoesBasicas.querySelector('.url-imagem').value;
+  const perguntasQuizz = informacoesBasicas.querySelector('.perguntas-quizz').value;
+  const niveisQuizz = informacoesBasicas.querySelector('.niveis-quizz').value;
 
   let novoQuizz = {
-    title: "",
-    image: "",
+    title: '',
+    image: '',
     questions: [
       {
-        title: "",
-        color: "",
+        title: '',
+        color: '',
         answers: [
           {
-            text: "",
-            image: "",
+            text: '',
+            image: '',
             isCorrectAnswer: true,
           },
           {
-            text: "",
-            image: "",
+            text: '',
+            image: '',
             isCorrectAnswer: false,
           },
         ],
@@ -269,9 +269,9 @@ function coletarInformacoesIniciais() {
     ],
     levels: [
       {
-        title: "",
-        image: "",
-        text: "",
+        title: '',
+        image: '',
+        text: '',
         minValue: 0,
       },
     ],
@@ -282,61 +282,51 @@ function coletarInformacoesIniciais() {
     novoQuizz.image = urlImagem;
     renderizarFormPerguntas(parseInt(perguntasQuizz));
     renderizarFormNiveis(parseInt(niveisQuizz));
-    informacoesBasicas.classList.add("ocultar");
+    informacoesBasicas.classList.add('ocultar');
     abrirCriacaoPerguntas(novoQuizz);
   } else {
-    alert("Entrada(s) inválida(s)! Por favor, preencha os dados corretamente.");
+    alert('Entrada(s) inválida(s)! Por favor, preencha os dados corretamente.');
   }
 }
 
 function validarInformacoesIniciais(titulo, url, qtdPerguntas, qtdNiveis) {
-  const condicaoTitulo = titulo.length !== "" && titulo.length >= 20 && titulo.length <= 65 && isNaN(titulo) === true;
-  const condicaoURL = url !== "" && urlValida(url) && validaURLInicioEFim(url);
-  const condicaoPerguntas = qtdPerguntas !== "" && parseInt(qtdPerguntas) >= 3 && Number(qtdPerguntas) % 1 === 0;
-  const condicaoNiveis = qtdNiveis !== "" && parseInt(qtdNiveis) >= 2 && Number(qtdNiveis) % 1 === 0;
+  const condicaoTitulo = titulo.length !== '' && titulo.length >= 20 && titulo.length <= 65 && isNaN(titulo) === true;
+  const condicaoURL = url !== '' && urlValida(url) && validaURLInicioEFim(url);
+  const condicaoPerguntas = qtdPerguntas !== '' && parseInt(qtdPerguntas) >= 3 && Number(qtdPerguntas) % 1 === 0;
+  const condicaoNiveis = qtdNiveis !== '' && parseInt(qtdNiveis) >= 2 && Number(qtdNiveis) % 1 === 0;
 
-  if (condicaoTitulo === true && condicaoURL === true && condicaoPerguntas === true && condicaoNiveis === true) {
-    return true;
-    //alert("Dados preenchidos corretamente");
-  }
-  return false;
+  return condicaoTitulo && condicaoURL && condicaoPerguntas && condicaoNiveis;
 }
 
 function urlValida(strURL) {
-  console.log("Entrei em urlValida!");
   let res = strURL.match(
     /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
   );
+
   return res !== null;
 }
 
 function validaURLInicioEFim(stringURL) {
-  console.log("Entrei em urlHTTP!");
-  const condicaoStartsWith = stringURL.startsWith("http://") || stringURL.startsWith("https://");
+  const condicaoStartsWith = stringURL.startsWith('http://') || stringURL.startsWith('https://');
   const condicaoEndsWith =
-    stringURL.endsWith(".jpg") ||
-    stringURL.endsWith(".jpeg") ||
-    stringURL.endsWith(".png") ||
-    stringURL.endsWith(".gif");
-  if (condicaoStartsWith && condicaoEndsWith) {
-    return true;
-  }
-  return false;
+    stringURL.endsWith('.jpg') ||
+    stringURL.endsWith('.jpeg') ||
+    stringURL.endsWith('.png') ||
+    stringURL.endsWith('.gif');
+
+  return condicaoStartsWith && condicaoEndsWith;
 }
 
 function abrirCriacaoPerguntas(objeto) {
-  const criacaoPerguntasQuizz = document.querySelector(".criacao-perguntas-quizz");
-  criacaoPerguntasQuizz.classList.remove("ocultar");
-  //Continuar com a validação dos inputs de Criação Perguntas
+  const criacaoPerguntasQuizz = document.querySelector('.criacao-perguntas-quizz');
+  criacaoPerguntasQuizz.classList.remove('ocultar');
 }
 
-//renderizarFormPerguntas(3); //exemplo de como renderizar 3 perguntas
-
 function renderizarFormPerguntas(nPerguntas) {
-  document.querySelector(".criacao-perguntas-quizz div").innerHTML = "";
+  document.querySelector('.criacao-perguntas-quizz div').innerHTML = '';
 
   for (let i = 0; i < nPerguntas; i++) {
-    document.querySelector(".criacao-perguntas-quizz div").innerHTML += `
+    document.querySelector('.criacao-perguntas-quizz div').innerHTML += `
     <div>
       <h4>Pergunta ${i + 1}</h4>
       <ion-icon name="create-outline" onclick="expandirFormPerguntas(this)"></ion-icon>
@@ -347,9 +337,9 @@ function renderizarFormPerguntas(nPerguntas) {
 
 function expandirFormPerguntas(element) {
   const form = element.parentElement;
-  alterarFlexDirection(form, "column");
+  alterarFlexDirection(form, 'column');
   form.innerHTML = `
-  <h4>${form.querySelector("h4").innerText}</h4>
+  <h4>${form.querySelector('h4').innerText}</h4>
   <ul>
     <li><input type="text" placeholder="Texto da pergunta"></li>
     <li><input type="text" placeholder="Cor de fundo da pergunta"></li>
@@ -373,16 +363,14 @@ function expandirFormPerguntas(element) {
 
 function alterarFlexDirection(element, flexDirection) {
   element.style.flexDirection = flexDirection;
-  element.style.alignItems = "flex-start";
+  element.style.alignItems = 'flex-start';
 }
 
-//renderizarFormNiveis(3); //exemplo de como renderizar 3 níveis
-
 function renderizarFormNiveis(nNiveis) {
-  document.querySelector(".criacao-niveis-quizz div").innerHTML = "";
+  document.querySelector('.criacao-niveis-quizz div').innerHTML = '';
 
   for (let i = 0; i < nNiveis; i++) {
-    document.querySelector(".criacao-niveis-quizz div").innerHTML += `
+    document.querySelector('.criacao-niveis-quizz div').innerHTML += `
     <div>
       <h4>Nível ${i + 1}</h4>
       <ion-icon name="create-outline" onclick="expandirFormNiveis(this)"></ion-icon>
@@ -393,9 +381,9 @@ function renderizarFormNiveis(nNiveis) {
 
 function expandirFormNiveis(element) {
   const form = element.parentElement;
-  alterarFlexDirection(form, "column");
+  alterarFlexDirection(form, 'column');
   form.innerHTML = `
-  <h4>${form.querySelector("h4").innerText}</h4>
+  <h4>${form.querySelector('h4').innerText}</h4>
   <ul>
     <li><input type="text" placeholder="Título do nível"></li>
     <li><input type="text" placeholder="% de acerto mínima"></li>
