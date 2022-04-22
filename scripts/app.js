@@ -1,6 +1,6 @@
 // Tela 1 - Lista de quizzes
 const API = 'https://mock-api.driven.com.br/api/v4/buzzquizz';
-let idQuizzUsuario = 8107;
+let idQuizzUsuario = 0000;
 
 obterQuizzes();
 //const idObterQuizzes = setInterval(obterQuizzes, 10000);
@@ -61,8 +61,16 @@ function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
   }
 }
 
-function criarQuizz(el) {
-  //
+// function abrirPaginaQuizz(el){
+
+// }
+
+function criarQuizz() {
+  const elCriacaoQuizz = document.querySelector('.criacao-quizz');
+  const elListaQuizzes = document.querySelector('.lista-quizzes');
+
+  elCriacaoQuizz.classList.remove('ocultar');
+  elListaQuizzes.classList.add('ocultar');
 }
 
 // Tela 2 - Página de um quizz
@@ -189,6 +197,15 @@ function definirNivel(percentual) {
   return nivelCorreto;
 }
 
+// Tela 3 - Criar um quizz
+
+// function validarInformacoesIniciais() {
+//   const informacoesBasicas = document.querySelector(".informacoes-basicas-quizz");
+
+//   const tituloQuizz = informacoesBasicas.querySelector("input:first-child");
+//   const urlImagem = informacoesBasicas.querySelector("input:nth-child(2)");
+
+// }
 function renderizarBotoesDeNavegacao() {
   const navegacao = document.querySelector('.pagina-quizz main .navegacao');
   navegacao.innerHTML = `
@@ -232,11 +249,11 @@ renderizarFormPerguntas(3); //exemplo de como renderizar 3 perguntas
 
 function renderizarFormPerguntas(nPerguntas) {
   for (let i = 0; i < nPerguntas; i++) {
-    document.querySelector('.form-perguntas').innerHTML += `
-    <li>
-      <h5>Pergunta ${i + 1}</h5>
+    document.querySelector('.criacao-perguntas-quizz div').innerHTML += `
+    <div>
+      <h4>Pergunta ${i + 1}</h4>
       <ion-icon name="create-outline" onclick="expandirForm(this)"></ion-icon>
-    </li>
+    </div>
     `;
   }
 }
@@ -246,18 +263,24 @@ function expandirForm(element) {
   form.style.flexDirection = 'column';
   form.style.alignItems = 'flex-start';
   form.innerHTML = `
-  <h5>${form.querySelector('h5').innerText}</h5>
-  <input type="text" placeholder="Texto da pergunta">
-  <input type="text" placeholder="Cor de fundo da pergunta">
-  <h5>Resposta correta</h5>
-  <input type="text" placeholder="Resposta correta">
-  <input type="text" placeholder="URL da imagem">
-  <h5>Respostas incorretas</h5>
-  <input type="text" placeholder="Resposta incorreta 1">
-  <input type="text" class="url" placeholder="URL da imagem 1">
-  <input type="text" placeholder="Resposta incorreta 2">
-  <input type="text" class="url" placeholder="URL da imagem 2">
-  <input type="text" placeholder="Resposta incorreta 3">
-  <input type="text" class="url" placeholder="URL da imagem 3">
+  <h4>${form.querySelector('h4').innerText}</h4>
+  <ul>
+    <li><input type="text" placeholder="Texto da pergunta"></li>
+    <li><input type="text" placeholder="Cor de fundo da pergunta"></li>
+  </ul>
+  <h4>Resposta correta</h4>
+  <ul>
+    <li><input type="text" placeholder="Resposta correta"></li>
+    <li><input type="text" placeholder="URL da imagem"></li>
+  </ul>
+  <h4>Respostas incorretas</h4>
+  <ul>
+    <li><input type="text" placeholder="Resposta incorreta 1"></li>
+    <li><input type="text" class="url" placeholder="URL da imagem 1"></li>
+    <li><input type="text" placeholder="Resposta incorreta 2">
+    <li><input type="text" class="url" placeholder="URL da imagem 2"></li>
+    <li><input type="text" placeholder="Resposta incorreta 3">
+    <li><input type="text" class="url" placeholder="URL da imagem 3"></li>
+  </ul>
   `;
 }

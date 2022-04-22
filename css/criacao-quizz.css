@@ -1,146 +1,135 @@
-/* Tela 3.2 - Perguntas do Quizz */
-
-.criacao-perguntas {
-  width: 100%;
+.criacao-quizz {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 600px;
   height: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
-.criacao-perguntas main {
+.criacao-quizz > div {
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  margin-top: 69px;
+  margin-top: 140px;
 }
 
-.criacao-perguntas main .titulo {
+.criacao-quizz h5 {
   font-weight: 700;
   font-size: 23px;
   line-height: 27px;
   color: #000000;
-  margin-top: 63px;
+  margin-bottom: 27px;
 }
 
-.form-perguntas {
-  width: 600px;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 36px;
-}
-
-.form-perguntas li {
-  width: 100%;
-  height: auto;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  background: #ffffff;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
-  padding: 27px 16px 15px 16px;
-  margin-bottom: 22px;
+.criacao-quizz h4 {
   font-weight: 700;
   font-size: 20px;
   line-height: 23px;
   color: #000000;
-}
-
-.form-perguntas li ion-icon {
-  font-size: 26px;
-}
-
-.form-perguntas li ion-icon:hover {
-  cursor: pointer;
-}
-
-.form-perguntas h5 {
   margin-bottom: 12px;
 }
 
-.form-perguntas input {
+.criacao-quizz li {
+  width: 100%;
+}
+
+.criacao-quizz input {
   width: 100%;
   height: auto;
-  font-style: italic;
   font-weight: 400;
   font-size: 19px;
   line-height: 22px;
-  color: #bababa;
+  color: #000000;
   background: #ffffff;
   border: 1px solid #d1d1d1;
   border-radius: 5px;
-  padding: 13px 23px;
-  margin-bottom: 14px;
+  padding: 13px 23.16px;
+  margin-bottom: 9px;
+  outline: none;
 }
 
-.form-perguntas .url {
-  margin-bottom: 32px;
+.criacao-quizz input::placeholder {
+  font-style: italic;
+  color: #bababa;
 }
 
-.criacao-perguntas button {
-  width: 352.82px;
+.criacao-quizz button {
+  width: 368.86px;
   height: 54px;
+  border: none;
+  border-radius: 15px;
   font-weight: 400;
   font-size: 21px;
   line-height: 25px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background: #ec362d;
   color: #fff5f4;
-  background-color: #ec362d;
-  border-radius: 15px;
-  border: transparent;
-  margin-top: calc(81px - 22px);
-  margin-bottom: 20px;
+  cursor: pointer;
+  margin-top: 85px;
 }
 
-.criacao-perguntas button:hover {
-  cursor: pointer;
+.criacao-quizz button:hover {
   filter: brightness(90%);
 }
 
-@media screen and (max-width: 1100px) {
-  .criacao-perguntas main .titulo {
+.criacao-quizz ion-icon {
+  font-size: 26px;
+}
+
+.criacao-quizz ion-icon:hover {
+  cursor: pointer;
+}
+
+.criacao-perguntas-quizz > div {
+  width: 100%;
+}
+
+.informacoes-basicas-quizz ul,
+.bloco-perguntas div {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  background: #ffffff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
+  padding: 21px 16px 12px 16px;
+  margin-bottom: 24px;
+}
+
+.bloco-perguntas div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bloco-perguntas ul {
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .criacao-quizz {
+    width: 100%;
+  }
+
+  .criacao-quizz > div {
+    margin-top: 107px;
+  }
+
+  .criacao-quizz h5 {
     font-size: 20px;
     line-height: 23px;
-    margin-top: 39px;
   }
 
-  .form-perguntas {
+  .criacao-quizz input {
     width: 100%;
-    margin-top: 28px;
-  }
-
-  .form-perguntas input {
     padding: 13px 14px;
   }
 
-  .form-perguntas input::placeholder {
-    font-style: italic;
-    font-weight: 400;
-    font-size: 19px;
-    line-height: 22px;
-    color: #bababa;
-  }
-
-  .criacao-perguntas button {
+  .criacao-quizz button {
     width: 324px;
     font-size: 18px;
     line-height: 21px;
-    margin-top: calc(46px - 22px);
-    margin-bottom: 20px;
-  }
-
-  .criacao-perguntas button:hover {
-    cursor: pointer;
-    filter: brightness(90%);
+    margin-top: 46px;
   }
 }
