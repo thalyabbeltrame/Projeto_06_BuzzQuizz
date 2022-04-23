@@ -1,12 +1,14 @@
-const API = "https://mock-api.driven.com.br/api/v4/buzzquizz";
+const API = 'https://mock-api.driven.com.br/api/v4/buzzquizz';
+const GRAD_IMG_QUIZZ = '180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%';
+const GRAD_IMG_BANNER = '0, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)';
+const OPCOES_SCROLL = { block: 'center', behavior: 'smooth' };
 
-// Variáveis globais - Tela 1
-let idQuizzUsuario = 0000;
-
-// Variáveis globais - Tela 2
+let idQuizzUsuario = null;
+let nPerguntasRespondidas = 0;
 let nRespostasCorretas = 0;
-let quizzAtualHtml = null;
+let elQuizzAtual = null;
 let quizzAtual = {};
+let listaIdsQuizzes = [];
 
 // Variáveis globais - Tela 3
 let novoQuizz = {
@@ -45,12 +47,10 @@ let infoQuizz = {
 };
 
 obterQuizzes();
-//const idObterQuizzes = setInterval(obterQuizzes, 10000);
 
 function obterQuizzes() {
   const promise = axios.get(`${API}/quizzes`);
   promise.then((response) => {
-    console.log("Consegui obter os quizzes da API!");
     separarQuizzesUsuario(response.data);
   });
   promise.catch(() => {
@@ -66,15 +66,32 @@ function separarQuizzesUsuario(quizzes) {
     if (el.id !== idQuizzUsuario) {
       listaQuizzesTodos += `
       <div class="quizz" name="${el.id}" onclick="abrirQuizz(this)">
-        <img src="${el.image}"/>
+        <div class="imagem" style="
+          background: linear-gradient(${GRAD_IMG_QUIZZ}), url(${el.image}); 
+          background-position: center; 
+          background-size: cover">
+        </div>
         <h6>${el.title}</h6>
       </div>
       `;
     } else {
       listaQuizzesUsuario += `
       <div class="quizz" name="${el.id}" onclick="abrirQuizz(this)">
-        <img src="${el.image}"/>
+        <div class="imagem" 
+          style="
+          background: linear-gradient(${GRAD_IMG_QUIZZ}), url(${el.image}); 
+          background-position: center; 
+          background-size: cover">
+        </div>
         <h6>${el.title}</h6>
+        <div class="botoes">
+          <button class="editar-quizz-btn" onclick="editarQuizz()">
+            <ion-icon name="create-outline"></ion-icon>
+          </button>
+          <button class="excluir-quizz-btn" onclick="excluirQuizz()">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+        </div>
       </div>
       `;
     }
@@ -83,11 +100,10 @@ function separarQuizzesUsuario(quizzes) {
 }
 
 function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
-  console.log("Entrei em renderizar!");
-  const elUsuarioVazio = document.querySelector(".quizzes-usuario-vazio");
-  const elCabecalhoUsuario = document.querySelector(".cabecalho-quizzes-usuario");
-  const elQuizzesUsuario = document.querySelector(".quizzes-usuario");
-  const elQuizzesTodos = document.querySelector(".quizzes-todos");
+  const elUsuarioVazio = document.querySelector('.quizzes-usuario-vazio');
+  const elCabecalhoUsuario = document.querySelector('.cabecalho-quizzes-usuario');
+  const elQuizzesUsuario = document.querySelector('.quizzes-usuario');
+  const elQuizzesTodos = document.querySelector('.quizzes-todos');
 
   elQuizzesTodos.innerHTML = quizzesTodos;
 
@@ -103,10 +119,6 @@ function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
   }
 }
 
-// function abrirPaginaQuizz(el){
-
-// }
-
 function criarQuizz() {
   const elCriacaoQuizz = document.querySelector(".criacao-quizz");
   const elListaQuizzes = document.querySelector(".lista-quizzes");
@@ -116,8 +128,8 @@ function criarQuizz() {
 }
 
 function abrirQuizz(elemento) {
-  quizzAtualHtml = elemento;
-  idQuizzAtual = elemento.getAttribute("name");
+  elQuizzAtual = elemento;
+  idQuizzAtual = elemento.getAttribute('name');
   axios
     .get(`${API}/quizzes/${idQuizzAtual}`)
     .then((resposta) => {
@@ -130,17 +142,19 @@ function abrirQuizz(elemento) {
 }
 
 function renderizarQuizz(quizz) {
-  const banner = document.querySelector(".pagina-quizz main .banner");
-  banner.style.background = `linear-gradient(0, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${quizz.image})`;
-  banner.style.backgroundPosition = "center";
-  banner.style.backgroundSize = "cover";
+  const banner = document.querySelector('.pagina-quizz main .banner');
+  const elListaQuizzes = document.querySelector('.lista-quizzes');
+  const elPaginaQuizz = document.querySelector('.pagina-quizz');
+  banner.style.background = `linear-gradient(${GRAD_IMG_BANNER}), url(${quizz.image})`;
+  banner.style.backgroundPosition = 'center';
+  banner.style.backgroundSize = 'cover';
   banner.innerHTML = `<span>${quizz.title}</span>`;
 
   renderizarPerguntas(quizz.questions);
 
-  document.querySelector(".lista-quizzes").classList.add("ocultar");
-  document.querySelector(".pagina-quizz").classList.remove("ocultar");
-  banner.scrollIntoView({ block: "start", behavior: "smooth" });
+  elListaQuizzes.classList.add('ocultar');
+  elPaginaQuizz.classList.remove('ocultar');
+  banner.scrollIntoView(OPCOES_SCROLL);
 }
 
 function renderizarPerguntas(questoes) {
@@ -159,16 +173,16 @@ function renderizarPerguntas(questoes) {
 
 function renderizarRespostas(respostas) {
   const respostasEmbaralhadas = embaralharRespostas(respostas);
-  let respostasHtml = "";
+  let elRespostas = '';
   respostasEmbaralhadas.forEach((resposta) => {
-    const corretaOuIncorreta = resposta.isCorrectAnswer ? "correta" : "incorreta";
-    respostasHtml += `
+    const corretaOuIncorreta = resposta.isCorrectAnswer ? 'correta' : 'incorreta';
+    elRespostas += `
     <li class="resposta ${corretaOuIncorreta}" onclick="selecionarResposta(this)">
         <img src="${resposta.image}">
         <span>${resposta.text}</span>
     </li>`;
   });
-  return respostasHtml;
+  return elRespostas;
 }
 
 function embaralharRespostas(respostas) {
@@ -176,8 +190,9 @@ function embaralharRespostas(respostas) {
 }
 
 function selecionarResposta(element) {
-  element.parentElement.parentElement.classList.add("selecionada");
-  const listaDeRespostas = element.parentElement.querySelectorAll(".resposta");
+  nPerguntasRespondidas++;
+  element.parentElement.parentElement.classList.add('selecionada');
+  const listaDeRespostas = element.parentElement.querySelectorAll('.resposta');
   listaDeRespostas.forEach((resposta) => {
     resposta.removeAttribute("onclick");
     resposta.classList.add("mostrar");
@@ -194,11 +209,12 @@ function checarSeRespostaEhCorreta(element) {
 function rolarParaProximaPergunta() {
   const perguntaAtual = document.querySelector(".pergunta.selecionada");
   const proximaPergunta = perguntaAtual.nextElementSibling;
-  if (proximaPergunta !== null) {
-    proximaPergunta.scrollIntoView({ block: "center", behavior: "smooth" });
-  } else {
+
+  if (nPerguntasRespondidas === quizzAtual.questions.length) {
     renderizarResultado();
     renderizarBotoesDeNavegacao();
+  } else if (proximaPergunta !== null) {
+    proximaPergunta.scrollIntoView(OPCOES_SCROLL);
   }
   perguntaAtual.classList.remove("selecionada");
 }
@@ -207,8 +223,8 @@ function renderizarResultado() {
   const nPerguntas = quizzAtual.questions.length;
   const percentualAcerto = Math.round((nRespostasCorretas / nPerguntas) * 100);
   const nivel = definirNivel(percentualAcerto);
-  const resultadoHtml = document.querySelector(".pagina-quizz main .finalizacao");
-  resultadoHtml.innerHTML = `
+  const elResultado = document.querySelector('.pagina-quizz main .finalizacao');
+  elResultado.innerHTML = `
   <div class="titulo">
     <span>${percentualAcerto}% de acerto: ${nivel.title}</span>
   </div>
@@ -219,7 +235,7 @@ function renderizarResultado() {
     </div>
   </div>
   `;
-  resultadoHtml.scrollIntoView({ block: "center", behavior: "smooth" });
+  elResultado.scrollIntoView(OPCOES_SCROLL);
 }
 
 function definirNivel(percentual) {
@@ -247,12 +263,10 @@ function renderizarBotoesDeNavegacao() {
 }
 
 function reiniciarQuizz() {
-  document.querySelector(".pagina-quizz main .pergunta").scrollIntoView({
-    block: "center",
-    behavior: "smooth",
-  });
+  document.querySelector('.pagina-quizz main .pergunta').scrollIntoView(OPCOES_SCROLL);
+  nPerguntasRespondidas = 0;
   nRespostasCorretas = 0;
-  abrirQuizz(quizzAtualHtml);
+  abrirQuizz(elQuizzAtual);
   limparResultado();
   limparNavegacao();
 }
@@ -266,14 +280,13 @@ function limparNavegacao() {
 }
 
 function voltarParaHome() {
+  nPerguntasRespondidas = 0;
   nRespostasCorretas = 0;
   limparResultado();
   limparNavegacao();
   document.querySelector(".pagina-quizz").classList.add("ocultar");
   document.querySelector(".lista-quizzes").classList.remove("ocultar");
 }
-
-// Tela 3 - Criar um quizz
 
 function coletarInformacoesIniciais() {
   const informacoesBasicas = document.querySelector(".informacoes-basicas-quizz");
@@ -294,7 +307,7 @@ function coletarInformacoesIniciais() {
     informacoesBasicas.classList.add("ocultar");
     criacaoPerguntasQuizz.classList.remove("ocultar");
   } else {
-    alert("Entrada(s) inválida(s)! Por favor, preencha os dados corretamente.");
+    alert('Entrada(s) inválida(s)! Por favor, preencha os dados corretamente.');
   }
 }
 
@@ -319,10 +332,10 @@ function validarURLImagem(url) {
 }
 
 function urlValida(strURL) {
-  console.log("Entrei em urlValida!");
   let res = strURL.match(
     /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
   );
+
   return res !== null;
 }
 
@@ -479,13 +492,11 @@ function validaHexadecimal(str) {
   return reg.test(str);
 }
 
-//renderizarFormPerguntas(3); //exemplo de como renderizar 3 perguntas
-
 function renderizarFormPerguntas(nPerguntas) {
-  document.querySelector(".criacao-perguntas-quizz div").innerHTML = "";
+  document.querySelector('.criacao-perguntas-quizz div').innerHTML = '';
 
   for (let i = 0; i < nPerguntas; i++) {
-    document.querySelector(".criacao-perguntas-quizz div").innerHTML += `
+    document.querySelector('.criacao-perguntas-quizz div').innerHTML += `
     <div>
       <h4>Pergunta ${i + 1}</h4>
       <ion-icon name="create-outline" onclick="expandirFormPerguntas(this)"></ion-icon>
@@ -496,9 +507,9 @@ function renderizarFormPerguntas(nPerguntas) {
 
 function expandirFormPerguntas(element) {
   const form = element.parentElement;
-  alterarFlexDirection(form, "column");
+  alterarFlexDirection(form, 'column');
   form.innerHTML = `
-  <h4>${form.querySelector("h4").innerText}</h4>
+  <h4>${form.querySelector('h4').innerText}</h4>
   <ul>
     <li><input type="text" placeholder="Texto da pergunta"></li>
     <li><input type="text" placeholder="Cor de fundo da pergunta"></li>
@@ -522,16 +533,14 @@ function expandirFormPerguntas(element) {
 
 function alterarFlexDirection(element, flexDirection) {
   element.style.flexDirection = flexDirection;
-  element.style.alignItems = "flex-start";
+  element.style.alignItems = 'flex-start';
 }
 
-//renderizarFormNiveis(3); //exemplo de como renderizar 3 níveis
-
 function renderizarFormNiveis(nNiveis) {
-  document.querySelector(".criacao-niveis-quizz div").innerHTML = "";
+  document.querySelector('.criacao-niveis-quizz div').innerHTML = '';
 
   for (let i = 0; i < nNiveis; i++) {
-    document.querySelector(".criacao-niveis-quizz div").innerHTML += `
+    document.querySelector('.criacao-niveis-quizz div').innerHTML += `
     <div>
       <h4>Nível ${i + 1}</h4>
       <ion-icon name="create-outline" onclick="expandirFormNiveis(this)"></ion-icon>
@@ -542,9 +551,9 @@ function renderizarFormNiveis(nNiveis) {
 
 function expandirFormNiveis(element) {
   const form = element.parentElement;
-  alterarFlexDirection(form, "column");
+  alterarFlexDirection(form, 'column');
   form.innerHTML = `
-  <h4>${form.querySelector("h4").innerText}</h4>
+  <h4>${form.querySelector('h4').innerText}</h4>
   <ul>
     <li><input type="text" placeholder="Título do nível"></li>
     <li><input type="text" placeholder="% de acerto mínima"></li>
@@ -560,8 +569,21 @@ function expandirFormNiveis(element) {
 //   const sucessoQuizz = document.querySelector('.sucesso-quizz');
 //   sucessoQuizz.innerHTML = `
 //   <h5>Seu quizz está pronto!</h5>
-//   <div></div>
+//   <img>
 //   <button class="reiniciar-btn" onclick="acessarQuizz()">Acessar Quizz</button>
 //   <button class="home-btn" onclick="voltarParaHome()">Voltar para home</button>
 //   `;
 // }
+
+function armazenaQuizzesUsuario(quizz) {
+  const idQuizz = quizz.id;
+  listaIdsQuizzes.push(idQuizz);
+  localStorage.setItem('listaIdQuizzes', JSON.stringify(listaIdsQuizzes));
+}
+
+function editarQuizz(elemento) {
+  const quizz = elemento.parentElement.parentElement;
+  const idQuizz = quizz.id;
+}
+
+function excluirQuizz() {}
