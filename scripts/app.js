@@ -1,19 +1,20 @@
 const API = 'https://mock-api.driven.com.br/api/v4/buzzquizz';
 const GRAD_IMG_QUIZZ = '180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%';
 const GRAD_IMG_BANNER = '0, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)';
-const OPCOES_SCROLL = { block: 'start', behavior: 'smooth' };
+const OPCOES_SCROLL = { block: 'center', behavior: 'smooth' };
 
 let idQuizzUsuario = null;
+let nPerguntasRespondidas = 0;
 let nRespostasCorretas = 0;
 let elQuizzAtual = null;
 let quizzAtual = {};
+let listaIdsQuizzes = [];
 
 obterQuizzes();
 
 function obterQuizzes() {
   const promise = axios.get(`${API}/quizzes`);
   promise.then((response) => {
-    console.log('Consegui obter os quizzes da API!');
     separarQuizzesUsuario(response.data);
   });
   promise.catch(() => {
@@ -47,6 +48,14 @@ function separarQuizzesUsuario(quizzes) {
           background-size: cover">
         </div>
         <h6>${el.title}</h6>
+        <div class="botoes">
+          <button class="editar-quizz-btn" onclick="editarQuizz()">
+            <ion-icon name="create-outline"></ion-icon>
+          </button>
+          <button class="excluir-quizz-btn" onclick="excluirQuizz()">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+        </div>
       </div>
       `;
     }
@@ -145,6 +154,7 @@ function embaralharRespostas(respostas) {
 }
 
 function selecionarResposta(element) {
+  nPerguntasRespondidas++;
   element.parentElement.parentElement.classList.add('selecionada');
   const listaDeRespostas = element.parentElement.querySelectorAll('.resposta');
   listaDeRespostas.forEach((resposta) => {
@@ -163,11 +173,12 @@ function checarSeRespostaEhCorreta(element) {
 function rolarParaProximaPergunta() {
   const perguntaAtual = document.querySelector('.pergunta.selecionada');
   const proximaPergunta = perguntaAtual.nextElementSibling;
-  if (proximaPergunta !== null) {
-    proximaPergunta.scrollIntoView(OPCOES_SCROLL);
-  } else {
+
+  if (nPerguntasRespondidas === quizzAtual.questions.length) {
     renderizarResultado();
     renderizarBotoesDeNavegacao();
+  } else if (proximaPergunta !== null) {
+    proximaPergunta.scrollIntoView(OPCOES_SCROLL);
   }
   perguntaAtual.classList.remove('selecionada');
 }
@@ -217,6 +228,7 @@ function renderizarBotoesDeNavegacao() {
 
 function reiniciarQuizz() {
   document.querySelector('.pagina-quizz main .pergunta').scrollIntoView(OPCOES_SCROLL);
+  nPerguntasRespondidas = 0;
   nRespostasCorretas = 0;
   abrirQuizz(elQuizzAtual);
   limparResultado();
@@ -232,6 +244,7 @@ function limparNavegacao() {
 }
 
 function voltarParaHome() {
+  nPerguntasRespondidas = 0;
   nRespostasCorretas = 0;
   limparResultado();
   limparNavegacao();
@@ -399,8 +412,21 @@ function expandirFormNiveis(element) {
 //   const sucessoQuizz = document.querySelector('.sucesso-quizz');
 //   sucessoQuizz.innerHTML = `
 //   <h5>Seu quizz está pronto!</h5>
-//   <div></div>
+//   <img>
 //   <button class="reiniciar-btn" onclick="acessarQuizz()">Acessar Quizz</button>
 //   <button class="home-btn" onclick="voltarParaHome()">Voltar para home</button>
 //   `;
 // }
+
+function armazenaQuizzesUsuario(quizz) {
+  const idQuizz = quizz.id;
+  listaIdsQuizzes.push(idQuizz);
+  localStorage.setItem('listaIdQuizzes', JSON.stringify(listaIdsQuizzes));
+}
+
+function editarQuizz(elemento) {
+  const quizz = elemento.parentElement.parentElement;
+  const idQuizz = quizz.id;
+}
+
+function excluirQuizz() {}
