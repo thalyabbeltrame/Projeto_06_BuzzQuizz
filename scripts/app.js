@@ -480,6 +480,55 @@ function abrirCriacaoNiveis(elemento) {
   elemento.parentNode.classList.add('ocultar');
 }
 
+function coletarNiveisQuizz() {
+  const blocoNiveis = document.querySelector('.bloco-niveis');
+  for (let i = 0; i < infoQuizz.qtdNiveis; i++) {
+    const bloco = blocoNiveis.querySelector(`div:nth-child(${i + 1})`);
+    if (bloco.querySelector('input') !== null) {
+      const textoNivel = bloco.querySelector(`input[placeholder="Título do nível"]`).value;
+      const porcentagemAcerto = bloco.querySelector(`input[placeholder="% de acerto mínima"]`).value;
+      const urlImagemNivel = bloco.querySelector(`input[placeholder="URL da imagem do nível"]`).value;
+      const descricaoNivel = bloco.querySelector(`input[placeholder="Descrição do nível"]`).value;
+      novoQuizz.levels.push({
+        title: textoNivel,
+        image: urlImagemNivel,
+        text: descricaoNivel,
+        minValue: porcentagemAcerto,
+      });
+    } else {
+      alert('Preencha todos os dados necessários');
+      return;
+    }
+  }
+  if (!validarNiveisQuizz()) {
+    abrirSucessoCriacaoQuizz(blocoNiveis);
+  } else {
+    alert('Entrada(s) inválida(s)! Por favor, preencha os dados corretamente.');
+  }
+}
+
+function validarNiveisQuizz() {
+  const temTituloInvalido = novoQuizz.levels.some((nivel) => nivel.title === '' || nivel.title.length < 10);
+  const temURLImagemInvalida = novoQuizz.levels.some((nivel) => !validarURLImagem(nivel.image));
+  const temDescricaoInvalida = novoQuizz.levels.some((nivel) => nivel.text === '' || nivel.text.length < 30);
+  const temPorcentagemMinimaInvalida = novoQuizz.levels.some(
+    (nivel) =>
+      nivel.minValue === '' ||
+      isNaN(parseFloat(nivel.minValue)) ||
+      parseFloat(nivel.minValue) < 0 ||
+      parseFloat(nivel.minValue) > 100
+  );
+  const naoTemNivelZero = novoQuizz.levels.every((nivel) => parseFloat(nivel.minValue) !== 0);
+  return (
+    temTituloInvalido || temURLImagemInvalida || temDescricaoInvalida || temPorcentagemMinimaInvalida || naoTemNivelZero
+  );
+}
+
+function abrirSucessoCriacaoQuizz(blocoNiveis) {
+  blocoNiveis.parentNode.classList.add('ocultar');
+  document.querySelector('.sucesso-quizz').classList.remove('ocultar');
+}
+
 // Tela 3.3 - Criar níveis
 function expandirFormNiveis(element) {
   const form = element.parentElement;
