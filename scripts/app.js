@@ -36,13 +36,15 @@ function obterQuizzes() {
 function obterQuizzesUsuario() {
   const listaIdsQuizzesUsuario = localStorage
     .getItem('listaIdsQuizzes')
-    .replace(/[\[\]']+/g, '')
+    ?.replace(/[\[\]']+/g, '')
     .split(',');
 
   listaQuizzesUsuario = '';
-  listaIdsQuizzesUsuario.forEach((id) => {
-    obterQuizz(id);
-  });
+  if (listaIdsQuizzesUsuario) {
+    listaIdsQuizzesUsuario.forEach((id) => {
+      obterQuizz(id);
+    });
+  }
 }
 
 function obterQuizz(id) {
@@ -93,11 +95,11 @@ function obterQuizzesTodos() {
 function adicionarQuizzesTodos(quizzes) {
   const listaIdsQuizzesUsuario = localStorage
     .getItem('listaIdsQuizzes')
-    .replace(/[\[\]']+/g, '')
+    ?.replace(/[\[\]']+/g, '')
     .split(',');
 
   quizzes.forEach((quizz) => {
-    if (!listaIdsQuizzesUsuario.includes(quizz.id)) {
+    if (!listaIdsQuizzesUsuario?.includes(quizz.id)) {
       listaQuizzesTodos += `
       <div class="quizz" name="${quizz.id}" onclick="abrirQuizz(this)">
         <div class="imagem" style="
