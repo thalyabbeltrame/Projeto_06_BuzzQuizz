@@ -1,4 +1,4 @@
-const API = 'https://mock-api.driven.com.br/api/v4/buzzquizz';
+const API = 'https://mock-api.driven.com.br/api/v6/buzzquizz';
 const GRAD_IMG_QUIZZ = '180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%';
 const GRAD_IMG_BANNER = '0, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)';
 const OPCOES_SCROLL = { block: 'center', behavior: 'smooth' };
@@ -34,17 +34,10 @@ function obterQuizzes() {
 }
 
 function obterQuizzesUsuario() {
-  const listaIdsQuizzesUsuario = localStorage
-    .getItem('listaIdsQuizzes')
-    ?.replace(/[\[\]']+/g, '')
-    .split(',');
+  const quizzesUsuario_localStorage = JSON.parse(localStorage.getItem('listaQuizzes'));
 
   listaQuizzesUsuario = '';
-  if (listaIdsQuizzesUsuario) {
-    listaIdsQuizzesUsuario.forEach((id) => {
-      obterQuizz(id);
-    });
-  }
+  quizzesUsuario_localStorage?.forEach((el) => obterQuizz(el.id));
 }
 
 function obterQuizz(id) {
@@ -72,7 +65,7 @@ function adicionarQuizzUsuario(quizz) {
       <button class="editar-quizz-btn" onclick="editarQuizz()">
         <ion-icon name="create-outline"></ion-icon>
       </button>
-      <button class="excluir-quizz-btn" onclick="excluirQuizz()">
+      <button class="excluir-quizz-btn" onclick="excluirQuizz(this)">
         <ion-icon name="trash-outline"></ion-icon>
       </button>
     </div>
@@ -93,13 +86,10 @@ function obterQuizzesTodos() {
 }
 
 function adicionarQuizzesTodos(quizzes) {
-  const listaIdsQuizzesUsuario = localStorage
-    .getItem('listaIdsQuizzes')
-    ?.replace(/[\[\]']+/g, '')
-    .split(',');
+  const quizzesUsuario_localStorage = JSON.parse(localStorage.getItem('listaQuizzes'));
 
   quizzes.forEach((quizz) => {
-    if (!listaIdsQuizzesUsuario?.includes(quizz.id)) {
+    if (!quizzesUsuario_localStorage?.some((el) => el.id === quizz.id)) {
       listaQuizzesTodos += `
       <div class="quizz" name="${quizz.id}" onclick="abrirQuizz(this)">
         <div class="imagem" style="
@@ -559,7 +549,7 @@ function coletarNiveisQuizz() {
         title: textoNivel,
         image: urlImagemNivel,
         text: descricaoNivel,
-        minValue: percentualMinimoAcerto,
+        minValue: parseFloat(percentualMinimoAcerto),
       });
     } else {
       alert('Preencha todos os dados necessários');
@@ -580,13 +570,9 @@ function validarNiveisQuizz() {
   const temURLImagemInvalida = novoQuizz.levels.some((nivel) => !validarURLImagem(nivel.image));
   const temDescricaoInvalida = novoQuizz.levels.some((nivel) => nivel.text === '' || nivel.text.length < 30);
   const temPorcentagemMinimaInvalida = novoQuizz.levels.some(
-    (nivel) =>
-      nivel.minValue === '' ||
-      isNaN(parseFloat(nivel.minValue)) ||
-      parseFloat(nivel.minValue) < 0 ||
-      parseFloat(nivel.minValue) > 100
+    (nivel) => nivel.minValue === '' || isNaN(nivel.minValue) || nivel.minValue < 0 || nivel.minValue > 100
   );
-  const naoTemNivelZero = novoQuizz.levels.every((nivel) => parseFloat(nivel.minValue) !== 0);
+  const naoTemNivelZero = novoQuizz.levels.every((nivel) => nivel.minValue !== 0);
   return (
     temTituloInvalido || temURLImagemInvalida || temDescricaoInvalida || temPorcentagemMinimaInvalida || naoTemNivelZero
   );
@@ -599,28 +585,28 @@ function abrirSucessoCriacaoQuizz(blocoNiveis) {
 }
 
 function enviarQuizzProServidor() {
-  const quizz = quizzTeste;
+  const quizz = novoQuizz;
   axios
     .post(`${API}/quizzes`, quizz)
     .then((response) => {
       const idNovoQuizz = response.data.id;
-      armazenarQuizzUsuario(idNovoQuizz);
-      obterQuizzesTodos();
+      const keyQuizz = response.data.key;
+      armazenarQuizzUsuario(idNovoQuizz, keyQuizz);
+      obterQuizzes();
     })
     .catch(() => {
       console.log('Não consegui enviar o quizz pra API!');
     });
 }
 
-function armazenarQuizzUsuario(idQuizz) {
-  const listaIdsQuizzes = JSON.parse(localStorage.getItem('listaIdsQuizzes')) || [];
-  if (listaIdsQuizzes.length > 0) {
-    listaIdsQuizzes.push(idQuizz);
-    localStorage.setItem('listaIdsQuizzes', JSON.stringify(listaIdsQuizzes));
+function armazenarQuizzUsuario(idQuizz, keyQuizz) {
+  const listaQuizzes = JSON.parse(localStorage.getItem('listaQuizzes')) || [];
+  if (listaQuizzes.length > 0) {
+    listaQuizzes.push({ id: idQuizz, key: keyQuizz });
+    localStorage.setItem('listaQuizzes', JSON.stringify(listaQuizzes));
   } else {
-    localStorage.setItem('listaIdsQuizzes', JSON.stringify([idQuizz]));
+    localStorage.setItem('listaQuizzes', JSON.stringify([{ id: idQuizz, key: keyQuizz }]));
   }
-  console.log(JSON.parse(localStorage.getItem('listaIdsQuizzes')));
 }
 
 // Tela 3.4 - Sucesso
@@ -636,6 +622,36 @@ function armazenarQuizzUsuario(idQuizz) {
 //   <button class="home-btn" onclick="voltarParaHome()">Voltar para home</button>
 //   `;
 // }
+
+// Bônus
+
+function editarQuizz() {
+  //
+}
+
+function excluirQuizz(el) {
+  confirm('Tem certeza que deseja excluir o quizz?');
+  if (confirm) {
+    const idQuizzDeletar = el.parentElement.parentElement.getAttribute('name');
+    const listaQuizzes = JSON.parse(localStorage.getItem('listaQuizzes'));
+    const keyQuizzDeletar = listaQuizzes.find((quiz) => quiz.id === parseInt(idQuizzDeletar)).key;
+    const listaQuizzesAtualizada = listaQuizzes.filter((quizz) => quizz.id !== parseInt(idQuizzDeletar));
+    localStorage.setItem('listaQuizzes', JSON.stringify(listaQuizzesAtualizada));
+
+    axios
+      .delete(`${API}/quizzes/${idQuizzDeletar}`, {
+        headers: {
+          'Secret-Key': `${keyQuizzDeletar}`,
+        },
+      })
+      .then((response) => {
+        obterQuizzes();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+}
 
 //  Validadores
 function validarURLImagem(url) {
