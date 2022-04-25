@@ -163,6 +163,10 @@ main .finalizacao {
   margin-bottom: 18px;
 }
 
+/* .finalizacao .titulo span {
+  word-wrap: break-word;
+} */
+
 .finalizacao > div {
   width: 100%;
   height: auto;
@@ -171,6 +175,15 @@ main .finalizacao {
   font-size: 19px;
   line-height: 25px;
   color: #484848;
+}
+
+/* .finalizacao > div .texto {
+  word-wrap: break-word;
+} */
+
+.finalizacao > div .texto span {
+  display: flex;
+  word-wrap: break-word;
 }
 
 .finalizacao img {
