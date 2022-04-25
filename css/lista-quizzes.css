@@ -96,7 +96,8 @@
   border-radius: 5px;
 }
 
-.quizz > h6 {
+.quizz > h6,
+.quizz-criado > h6 {
   width: 301px;
   font-weight: 400;
   font-size: 19px;
@@ -181,7 +182,8 @@
     width: 100%;
   }
 
-  .quizz > h6 {
+  .quizz > h6,
+  .quizz-criado > h6 {
     width: 88.5294118%;
   }
 }

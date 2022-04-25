@@ -128,7 +128,7 @@ function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
 
 function abrirQuizz(elemento) {
   elQuizzAtual = elemento;
-  idQuizzAtual = elemento.getAttribute('name');
+  const idQuizzAtual = elemento.getAttribute('name');
   axios
     .get(`${API}/quizzes/${idQuizzAtual}`)
     .then((resposta) => {
@@ -285,6 +285,7 @@ function voltarParaHome() {
   limparResultado();
   limparNavegacao();
   document.querySelector('.pagina-quizz').classList.add('ocultar');
+  document.querySelector('.criacao-quizz').classList.add('ocultar');
   document.querySelector('.lista-quizzes').classList.remove('ocultar');
 }
 
@@ -593,6 +594,7 @@ function enviarQuizzProServidor() {
       const keyQuizz = response.data.key;
       armazenarQuizzUsuario(idNovoQuizz, keyQuizz);
       obterQuizzes();
+      renderizarSucessoQuizz(idNovoQuizz);
     })
     .catch(() => {
       console.log('Não consegui enviar o quizz pra API!');
@@ -611,17 +613,39 @@ function armazenarQuizzUsuario(idQuizz, keyQuizz) {
 
 // Tela 3.4 - Sucesso
 
-// function renderizarSucessoQuizz() {
-//   const sucessoQuizz = document.querySelector('.sucesso-quizz');
-//   sucessoQuizz.innerHTML = `
-//   <h5>Seu quizz está pronto!</h5>
-//   <div class="image-sucesso-quizz">
-//     <img src="${novoQuizz.image}">
-//   </div>
-//   <button class="reiniciar-btn" onclick="acessarQuizz()">Acessar Quizz</button>
-//   <button class="home-btn" onclick="voltarParaHome()">Voltar para home</button>
-//   `;
-// }
+function renderizarSucessoQuizz(idQuizzCriado) {
+  const sucessoQuizz = document.querySelector('.sucesso-quizz');
+  // sucessoQuizz.innerHTML = `
+  // <h5>Seu quizz está pronto!</h5>
+  // <div class="image-sucesso-quizz" name="${idQuizzCriado}" onclick="abrirQuizz(this)">
+  //   <img src="${novoQuizz.image}">
+  // </div>
+  // <button class="reiniciar-btn" onclick="acessarQuizz()">Acessar Quizz</button>
+  // <button class="home-btn" onclick="voltarParaHome()">Voltar para home</button>
+  // `;
+  sucessoQuizz.innerHTML = `
+  <h5>Seu quizz está pronto!</h5>
+  <div class="quizz" name="${idQuizzCriado}" onclick="abrirQuizz(this)">
+    <div class="imagem" 
+      style="
+      background: linear-gradient(${GRAD_IMG_QUIZZ}), url(${novoQuizz.image}); 
+      background-position: center; 
+      background-size: cover">
+    </div>
+    <h6>${novoQuizz.title}</h6>
+  </div>
+  <button class="reiniciar-btn" onclick="acessarQuizz()">Acessar Quizz</button>
+  <button class="home-btn" onclick="voltarParaHome()">Voltar para home</button>
+  `;
+}
+
+function acessarQuizz() {
+  document.querySelector('.criacao-quizz').classList.add("ocultar");
+  const elSucessoQuizz = document.querySelector('.sucesso-quizz');
+  const elQuizzCriado = elSucessoQuizz.querySelector('.quizz');
+  abrirQuizz(elQuizzCriado);
+  //${document.querySelector(`div[name="${idQuizzCriado}"]`)}
+}
 
 // Bônus
 

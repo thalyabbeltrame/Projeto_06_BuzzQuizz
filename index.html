@@ -18,7 +18,7 @@
     </header>
 
     <!-- Início: Tela 1 - Página de Lista de Quizzes -->
-    <div class="lista-quizzes">
+    <div class="lista-quizzes ocultar">
       <div class="quizzes-usuario-vazio">
         <p>Você não criou nenhum quizz ainda :(</p>
         <button onclick="criarQuizz()">Criar Quizz</button>
@@ -45,18 +45,14 @@
     <!-- Fim: Tela 2 - Página de um quizz -->
 
     <!-- Início: Tela 3 - Criação de quizz -->
-    <div class="criacao-quizz ocultar">
-      <div class="informacoes-basicas-quizz">
+    <div class="criacao-quizz">
+      <div class="informacoes-basicas-quizz ocultar">
         <h5>Comece pelo começo</h5>
         <ul>
           <li><input type="text" placeholder="Título do seu quizz" class="titulo-quizz" /></li>
           <li><input type="text" placeholder="URL da imagem do seu quizz" class="url-imagem" /></li>
           <li><input type="text" placeholder="Quantidade de perguntas do quizz" class="perguntas-quizz" /></li>
           <li><input type="text" placeholder="Quantidade de níveis do quizz" class="niveis-quizz" /></li>
-          <!-- <li><input type="text" placeholder="Título do seu quizz" /></li>
-          <li><input type="text" placeholder="URL da imagem do seu quizz" /></li>
-          <li><input type="text" placeholder="Quantidade de perguntas do quizz" /></li>
-          <li><input type="text" placeholder="Quantidade de níveis do quizz" /></li> -->
         </ul>
         <button onclick="coletarInformacoesIniciais()">Prosseguir pra criar perguntas</button>
       </div>
@@ -70,7 +66,15 @@
         <div class="bloco-niveis"></div>
         <button onclick="coletarNiveisQuizz()">Finalizar quizz</button>
       </div>
-      <div class="sucesso-quizz ocultar"></div>
+      <div class="sucesso-quizz">
+        <h5>Seu quizz está pronto!</h5>
+        <div class="quizz-criado" onclick="abrirQuizz(this)">
+          <img class="imagem" src="https://miro.medium.com/max/640/0*i1v1In2Tn4Stnwnl.jpg"/>
+          <h6>Esse é o título do quizz</h6>
+        </div>
+        <button class="reiniciar-btn" onclick="acessarQuizz()">Acessar Quizz</button>
+        <button class="home-btn" onclick="voltarParaHome()">Voltar para home</button>
+      </div>
     </div>
     <!-- Fim: Tela 3 - Criação de quizz -->
     <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
