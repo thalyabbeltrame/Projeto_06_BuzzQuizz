@@ -28,12 +28,19 @@ let modoEdicao = false;
 let quizzEditar = {};
 let quizzEditar_localStorage = {};
 
+let idIntervalQuizzesUsuario = 0;
+let idIntervalQuizzesTodos = 0;
+
 // Tela 1 - Lista de Quizzes
 obterQuizzes();
 
 function obterQuizzes() {
-  obterQuizzesUsuario();
+  clearInterval(idIntervalQuizzesUsuario);
+  clearInterval(idIntervalQuizzesTodos);
   obterQuizzesTodos();
+  obterQuizzesUsuario();
+  idIntervalQuizzesUsuario = setInterval(obterQuizzesUsuario, 10000);
+  idIntervalQuizzesTodos = setInterval(obterQuizzesTodos, 10000);
 }
 
 function obterQuizzesUsuario() {
@@ -281,6 +288,7 @@ function voltarParaHome() {
   document.querySelector('.criacao-quizz').classList.add('ocultar');
   document.querySelector('.lista-quizzes').classList.remove('ocultar');
   document.querySelector('.lista-quizzes').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  obterQuizzes();
 }
 
 // Tela 3 - Criação de Quizzes
@@ -575,7 +583,6 @@ function enviarQuizzProServidor() {
       const idNovoQuizz = response.data.id;
       const keyNovoQuizz = response.data.key;
       armazenarQuizzUsuario(idNovoQuizz, keyNovoQuizz);
-      obterQuizzes();
       renderizarSucessoQuizz(idNovoQuizz);
     })
     .catch(() => {
@@ -592,7 +599,7 @@ function enviarQuizzEditadoProServidor() {
       },
     })
     .then(() => {
-      obterQuizzes();
+      renderizarSucessoQuizz(quizzEditar_localStorage.id);
       modoEdicao = false;
       quizzEditar_localStorage = {};
     })
@@ -619,7 +626,7 @@ function renderizarSucessoQuizz(idQuizzCriado) {
   const sucessoQuizz = document.querySelector('.sucesso-quizz');
   sucessoQuizz.innerHTML = `
   <h5>Seu quizz está pronto!</h5>
-  <div class="quizz" name="${idQuizzCriado}" onclick="abrirQuizz(this)">
+  <div class="quizz-criado" name="${idQuizzCriado}" onclick="abrirQuizz(this)">
     <div class="imagem" 
       style="
       background: linear-gradient(${GRAD_IMG_QUIZZ}), url(${novoQuizz.image}); 
@@ -634,9 +641,9 @@ function renderizarSucessoQuizz(idQuizzCriado) {
 }
 
 function acessarQuizz() {
-  document.querySelector('.criacao-quizz').classList.add("ocultar");
+  document.querySelector('.criacao-quizz').classList.add('ocultar');
   const elSucessoQuizz = document.querySelector('.sucesso-quizz');
-  const elQuizzCriado = elSucessoQuizz.querySelector('.quizz');
+  const elQuizzCriado = elSucessoQuizz.querySelector('.quizz-criado');
   abrirQuizz(elQuizzCriado);
 }
 
@@ -662,8 +669,7 @@ function editarQuizz(elemento, evento) {
 
 function excluirQuizz(elemento, evento) {
   evento.stopPropagation();
-  confirm('Tem certeza que deseja excluir o quizz?');
-  if (confirm) {
+  if (confirm('Tem certeza que deseja excluir o quizz?')) {
     const idQuizzDeletar = elemento.parentElement.parentElement.getAttribute('name');
     const listaQuizzes = JSON.parse(localStorage.getItem('listaQuizzes'));
     const keyQuizzDeletar = listaQuizzes.find((quiz) => quiz.id === parseInt(idQuizzDeletar)).key;
