@@ -409,7 +409,7 @@ function renderizarPerguntasValues(elemento) {
 
 function coletarPerguntasQuizz() {
   const blocoPerguntas = document.querySelector('.bloco-perguntas');
-  for (let i = 0; i < infoNovoQuizz.qtdPerguntas; i++) {
+  for (let i = 0; i < infoNovoQuizz.qtyPerguntas; i++) {
     const bloco = blocoPerguntas.querySelector(`div:nth-child(${i + 1})`);
     if (bloco.querySelector('input') !== null) {
       const textoPergunta = bloco.querySelector('.texto-pergunta').value;
@@ -475,7 +475,7 @@ function checarSeTemRespostaIncorretaInvalida() {
     );
     if (respostasIncorretasCompletas.length >= 1 && respostasIncorretasIncompletas.length === 0) contador++;
   });
-  return contador < infoNovoQuizz.qtdPerguntas;
+  return contador < infoNovoQuizz.qtyPerguntas;
 }
 
 function removerRespostasVazias() {
@@ -516,7 +516,7 @@ function renderizarNiveisValues(elemento) {
 
 function coletarNiveisQuizz() {
   const blocoNiveis = document.querySelector('.bloco-niveis');
-  for (let i = 0; i < infoNovoQuizz.qtdNiveis; i++) {
+  for (let i = 0; i < infoNovoQuizz.qtyNiveis; i++) {
     const bloco = blocoNiveis.querySelector(`div:nth-child(${i + 1})`);
     if (bloco.querySelector('input') !== null) {
       const textoNivel = bloco.querySelector('.titulo-nivel').value;
