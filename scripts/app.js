@@ -732,6 +732,7 @@ function excluirQuizz(elemento, evento) {
   clearInterval(idIntervalQuizzesTodos);
   evento.stopPropagation();
   if (confirm('Tem certeza que deseja excluir o quizz?')) {
+    mostrarEsconderLoading();
     const idQuizzDeletar = elemento.parentElement.parentElement.getAttribute('name');
     const listaQuizzes = JSON.parse(localStorage.getItem('listaQuizzes'));
     const keyQuizzDeletar = listaQuizzes.find((quiz) => quiz.id === parseInt(idQuizzDeletar)).key;
