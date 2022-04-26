@@ -97,7 +97,7 @@ function obterQuizzesTodos() {
 
 function adicionarQuizzesTodos(quizzes) {
   const quizzesUsuario_localStorage = JSON.parse(localStorage.getItem('listaQuizzes'));
-
+  listaQuizzesTodos = '';
   quizzes.forEach((quizz) => {
     if (!quizzesUsuario_localStorage?.some((el) => el.id === quizz.id)) {
       listaQuizzesTodos += `
@@ -155,6 +155,7 @@ function renderizarQuizz(quizz) {
   const elBanner = document.querySelector('.pagina-quizz main .banner');
   const elListaQuizzes = document.querySelector('.lista-quizzes');
   const elPaginaQuizz = document.querySelector('.pagina-quizz');
+  const elCriacaoQuizz = document.querySelector('.criacao-quizz');
   elBanner.style.background = `linear-gradient(${GRAD_IMG_BANNER}), url(${quizz.image})`;
   elBanner.style.backgroundPosition = 'center';
   elBanner.style.backgroundSize = 'cover';
@@ -163,6 +164,7 @@ function renderizarQuizz(quizz) {
   renderizarPerguntas(quizz.questions);
 
   elListaQuizzes.classList.add('ocultar');
+  elCriacaoQuizz.classList.add('ocultar');
   elPaginaQuizz.classList.remove('ocultar');
   elBanner.scrollIntoView(OPCOES_SCROLL);
 }
@@ -241,6 +243,7 @@ function renderizarResultado() {
     </div>
   </div>
   `;
+  elResultado.classList.remove('ocultar');
   elResultado.scrollIntoView(OPCOES_SCROLL);
 }
 
@@ -263,10 +266,12 @@ function renderizarBotoesDeNavegacao() {
     <span>Voltar para home</span>
   </button>
   `;
+  navegacao.classList.remove('ocultar');
+  //navegacao.scrollIntoView({block: "end", behavior: "smooth", inline: "nearest"});
 }
 
 function reiniciarQuizz() {
-  document.querySelector('.pagina-quizz').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  document.querySelector('.pagina-quizz .banner').scrollIntoView({ block: 'start', behavior: 'smooth'}); //inline: "nearest"});
   qtyPerguntasRespondidas = 0;
   qtyRespostasCorretas = 0;
   abrirQuizz(elQuizzAberto);
@@ -275,11 +280,15 @@ function reiniciarQuizz() {
 }
 
 function limparResultado() {
-  document.querySelector('.pagina-quizz main .finalizacao').innerHTML = '';
+  const elFinalizacao = document.querySelector('.pagina-quizz main .finalizacao');
+  elFinalizacao.innerHTML = '';
+  elFinalizacao.classList.add('ocultar');
 }
 
 function limparNavegacao() {
-  document.querySelector('.pagina-quizz main .navegacao').innerHTML = '';
+  const elNavegacao = document.querySelector('.pagina-quizz main .navegacao');
+  elNavegacao.innerHTML = '';
+  elNavegacao.classList.add('ocultar');
 }
 
 function voltarParaHome() {
