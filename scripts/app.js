@@ -706,6 +706,7 @@ function editarQuizz(elemento, evento) {
 }
 
 function excluirQuizz(elemento, evento) {
+  mostrarEsconderLoading();
   evento.stopPropagation();
   if (confirm('Tem certeza que deseja excluir o quizz?')) {
     const idQuizzDeletar = elemento.parentElement.parentElement.getAttribute('name');
@@ -722,10 +723,13 @@ function excluirQuizz(elemento, evento) {
       })
       .then(() => {
         obterQuizzes();
+        setTimeout(mostrarEsconderLoading, 3000);
       })
       .catch((error) => {
         console.log(error);
       });
+  } else {
+    setTimeout(mostrarEsconderLoading, 3000);
   }
 }
 
