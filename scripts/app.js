@@ -28,19 +28,18 @@ let modoEdicao = false;
 let quizzEditar = {};
 let quizzEditar_localStorage = {};
 
-let idIntervalQuizzesUsuario = 0;
-let idIntervalQuizzesTodos = 0;
-
 // Tela 1 - Lista de Quizzes
 obterQuizzes();
 
+function mostrarEsconderLoading() {
+  const elLoading = document.querySelector('.loading');
+  elLoading.classList.toggle('ocultar');
+}
+
 function obterQuizzes() {
-  clearInterval(idIntervalQuizzesUsuario);
-  clearInterval(idIntervalQuizzesTodos);
-  obterQuizzesTodos();
+  mostrarEsconderLoading();
   obterQuizzesUsuario();
-  idIntervalQuizzesUsuario = setInterval(obterQuizzesUsuario, 10000);
-  idIntervalQuizzesTodos = setInterval(obterQuizzesTodos, 10000);
+  obterQuizzesTodos();
 }
 
 function obterQuizzesUsuario() {
@@ -83,11 +82,13 @@ function adicionarQuizzUsuario(quizz) {
 }
 
 function obterQuizzesTodos() {
+  listaQuizzesTodos = '';
   axios
     .get(`${API}/quizzes`)
     .then((response) => {
       adicionarQuizzesTodos(response.data);
       renderizarListaQuizzes(listaQuizzesUsuario, listaQuizzesTodos);
+      setTimeout(mostrarEsconderLoading, 3000);
     })
     .catch(() => {
       console.log('Não consegui obter os quizzes da API!');
@@ -134,6 +135,7 @@ function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
 }
 
 function abrirQuizz(elemento) {
+  mostrarEsconderLoading();
   elQuizzAberto = elemento;
   idQuizzAberto = elemento.getAttribute('name');
   axios
@@ -141,6 +143,7 @@ function abrirQuizz(elemento) {
     .then((resposta) => {
       objQuizzAberto = resposta.data;
       renderizarQuizz(objQuizzAberto);
+      setTimeout(mostrarEsconderLoading, 3000);
     })
     .catch((erro) => {
       console.log(erro);
@@ -683,6 +686,7 @@ function acessarQuizz() {
 // Bônus
 
 function editarQuizz(elemento, evento) {
+  mostrarEsconderLoading();
   evento.stopPropagation();
   modoEdicao = true;
   const idQuizzEditar = elemento.parentElement.parentElement.getAttribute('name');
@@ -694,6 +698,7 @@ function editarQuizz(elemento, evento) {
     .then((response) => {
       quizzEditar = response.data;
       criarOuEditarQuizz();
+      setTimeout(mostrarEsconderLoading, 3000);
     })
     .catch(() => {
       console.log('Não consegui obter o quizz para editar!');
