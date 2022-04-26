@@ -41,7 +41,7 @@ function mostrarEsconderLoading() {
 
 function obterQuizzes() {
   const elLoading = document.querySelector('.loading');
-  if(elLoading.classList.contains('ocultar')) {
+  if (elLoading.classList.contains('ocultar')) {
     mostrarEsconderLoading();
   }
   obterQuizzesUsuario();
@@ -57,14 +57,9 @@ function obterQuizzesUsuario() {
 }
 
 function obterQuizz(id) {
-  axios
-    .get(`${API}/quizzes/${id}`)
-    .then((resposta) => {
-      adicionarQuizzUsuario(resposta.data);
-    })
-    .catch((erro) => {
-      alert("Não foi possível carregar o quizz!");
-    });
+  axios.get(`${API}/quizzes/${id}`).then((resposta) => {
+    adicionarQuizzUsuario(resposta.data);
+  });
 }
 
 function adicionarQuizzUsuario(quizz) {
@@ -87,16 +82,10 @@ function adicionarQuizzUsuario(quizz) {
 
 function obterQuizzesTodos() {
   listaQuizzesTodos = '';
-  axios
-    .get(`${API}/quizzes`)
-    .then((response) => {
-      adicionarQuizzesTodos(response.data);
-      renderizarListaQuizzes(listaQuizzesUsuario, listaQuizzesTodos);
-      //setTimeout(mostrarEsconderLoading, 3000);
-    })
-    .catch(() => {
-      alert("Não foi possível carregar os quizzes!");
-    });
+  axios.get(`${API}/quizzes`).then((response) => {
+    adicionarQuizzesTodos(response.data);
+    renderizarListaQuizzes(listaQuizzesUsuario, listaQuizzesTodos);
+  });
 }
 
 function adicionarQuizzesTodos(quizzes) {
@@ -120,7 +109,7 @@ function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
   const elCabecalhoUsuario = document.querySelector('.cabecalho-quizzes-usuario');
   const elQuizzesUsuario = document.querySelector('.quizzes-usuario');
   const elQuizzesTodos = document.querySelector('.quizzes-todos');
-  const elLoading = document.querySelector('.loading'); 
+  const elLoading = document.querySelector('.loading');
   elQuizzesTodos.innerHTML = quizzesTodos;
 
   if (quizzesUsuario !== '') {
@@ -133,7 +122,7 @@ function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
     elQuizzesUsuario.classList.add('ocultar');
     elCabecalhoUsuario.classList.add('ocultar');
   }
-  if(!elLoading.classList.contains('ocultar')) {
+  if (!elLoading.classList.contains('ocultar')) {
     mostrarEsconderLoading();
   }
 }
@@ -144,16 +133,10 @@ function abrirQuizz(elemento) {
   clearInterval(idIntervalQuizzesTodos);
   elQuizzAberto = elemento;
   idQuizzAberto = elemento.getAttribute('name');
-  axios
-    .get(`${API}/quizzes/${idQuizzAberto}`)
-    .then((resposta) => {
-      objQuizzAberto = resposta.data;
-      renderizarQuizz(objQuizzAberto);
-      //setTimeout(mostrarEsconderLoading, 3000);
-    })
-    .catch((erro) => {
-      alert("Não foi possível abrir o quizz, tente novamente!");
-    });
+  axios.get(`${API}/quizzes/${idQuizzAberto}`).then((resposta) => {
+    objQuizzAberto = resposta.data;
+    renderizarQuizz(objQuizzAberto);
+  });
 }
 
 // Tela 2 - Quizz
@@ -277,7 +260,7 @@ function renderizarBotoesDeNavegacao() {
 }
 
 function reiniciarQuizz() {
-  document.querySelector('.pagina-quizz .banner').scrollIntoView({ block: 'start', behavior: 'smooth'}); 
+  document.querySelector('.pagina-quizz .banner').scrollIntoView({ block: 'start', behavior: 'smooth' });
   qtyPerguntasRespondidas = 0;
   qtyRespostasCorretas = 0;
   abrirQuizz(elQuizzAberto);
@@ -630,9 +613,10 @@ function enviarQuizzProServidor() {
       limparNovoQuizz();
     })
     .catch(() => {
-      alert("Não foi possível salvar o quizz, tente novamente!");
+      alert('Não foi possível salvar o quizz, tente novamente!');
       limparNovoQuizz();
       mostrarEsconderLoading();
+      voltarParaHome();
     });
 }
 
@@ -651,10 +635,12 @@ function enviarQuizzEditadoProServidor() {
       limparNovoQuizz();
     })
     .catch(() => {
-      alert("Não foi possível salvar as alterações do quizz, tente novamente!");
+      alert('Não foi possível salvar as alterações do quizz, tente novamente!');
       modoEdicao = false;
       quizzEditar_localStorage = {};
       limparNovoQuizz();
+      mostrarEsconderLoading();
+      voltarParaHome();
     });
 }
 
@@ -713,17 +699,11 @@ function editarQuizz(elemento, evento) {
   const listaQuizzes = JSON.parse(localStorage.getItem('listaQuizzes'));
   const keyQuizzEditar = listaQuizzes.find((quiz) => quiz.id === parseInt(idQuizzEditar)).key;
   quizzEditar_localStorage = { id: idQuizzEditar, key: keyQuizzEditar };
-  axios
-    .get(`${API}/quizzes/${idQuizzEditar}`)
-    .then((response) => {
-      quizzEditar = response.data;
-      criarOuEditarQuizz();
-      mostrarEsconderLoading();
-      //setTimeout(mostrarEsconderLoading, 3000);
-    })
-    .catch(() => {
-      alert("Não foi possível iniciar a edição do quizz, tente novamente!");
-    });
+  axios.get(`${API}/quizzes/${idQuizzEditar}`).then((response) => {
+    quizzEditar = response.data;
+    criarOuEditarQuizz();
+    mostrarEsconderLoading();
+  });
 }
 
 function excluirQuizz(elemento, evento) {
@@ -747,14 +727,9 @@ function excluirQuizz(elemento, evento) {
       })
       .then(() => {
         obterQuizzes();
-        //setTimeout(mostrarEsconderLoading, 3000);
-      })
-      .catch((error) => {
-        alert("Não foi possível excluir o quizz, tente novamente!");
       });
   } else {
     mostrarEsconderLoading();
-    //setTimeout(mostrarEsconderLoading, 3000);
   }
 }
 

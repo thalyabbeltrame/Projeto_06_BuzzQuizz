@@ -270,6 +270,7 @@ main .navegacao {
 
   .resposta img {
     height: auto;
+    min-width: 113px;
   }
 
   main .finalizacao {
