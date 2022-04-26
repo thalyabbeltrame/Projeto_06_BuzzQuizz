@@ -1,7 +1,7 @@
 const API = 'https://mock-api.driven.com.br/api/v6/buzzquizz';
-const GRAD_IMG_QUIZZ = '180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 64.58%, #000000 100%';
 const GRAD_IMG_BANNER = '0, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)';
 const OPCOES_SCROLL = { block: 'center', behavior: 'smooth' };
+const TEMPO_10_S = 10 * 1000;
 
 let listaQuizzesUsuario = '';
 let listaQuizzesTodos = '';
@@ -28,6 +28,9 @@ let modoEdicao = false;
 let quizzEditar = {};
 let quizzEditar_localStorage = {};
 
+let idIntervalQuizzesUsuario;
+let idIntervalQuizzesTodos;
+
 // Tela 1 - Lista de Quizzes
 obterQuizzes();
 
@@ -37,9 +40,14 @@ function mostrarEsconderLoading() {
 }
 
 function obterQuizzes() {
-  mostrarEsconderLoading();
+  const elLoading = document.querySelector('.loading');
+  if(elLoading.classList.contains('ocultar')) {
+    mostrarEsconderLoading();
+  }
   obterQuizzesUsuario();
   obterQuizzesTodos();
+  idIntervalQuizzesUsuario = setInterval(obterQuizzesUsuario, TEMPO_10_S);
+  idIntervalQuizzesTodos = setInterval(obterQuizzesTodos, TEMPO_10_S);
 }
 
 function obterQuizzesUsuario() {
@@ -55,19 +63,15 @@ function obterQuizz(id) {
       adicionarQuizzUsuario(resposta.data);
     })
     .catch((erro) => {
-      console.log(erro);
+      alert("Não foi possível carregar o quizz!");
     });
 }
 
 function adicionarQuizzUsuario(quizz) {
   listaQuizzesUsuario += `
   <div class="quizz" name="${quizz.id}" onclick="abrirQuizz(this)">
-    <div class="imagem" 
-      style="
-      background: linear-gradient(${GRAD_IMG_QUIZZ}), url(${quizz.image}); 
-      background-position: center; 
-      background-size: cover">
-    </div>
+    <img src=${quizz.image} alt="Imagem do quizz" class="imagem"/>
+    <div class="gradiente"></div>
     <h6>${quizz.title}</h6>
     <div class="botoes">
       <button class="editar-quizz-btn" onclick="editarQuizz(this, event)">
@@ -88,10 +92,10 @@ function obterQuizzesTodos() {
     .then((response) => {
       adicionarQuizzesTodos(response.data);
       renderizarListaQuizzes(listaQuizzesUsuario, listaQuizzesTodos);
-      setTimeout(mostrarEsconderLoading, 3000);
+      //setTimeout(mostrarEsconderLoading, 3000);
     })
     .catch(() => {
-      console.log('Não consegui obter os quizzes da API!');
+      alert("Não foi possível carregar os quizzes!");
     });
 }
 
@@ -101,12 +105,9 @@ function adicionarQuizzesTodos(quizzes) {
   quizzes.forEach((quizz) => {
     if (!quizzesUsuario_localStorage?.some((el) => el.id === quizz.id)) {
       listaQuizzesTodos += `
-      <div class="quizz" name="${quizz.id}" onclick="abrirQuizz(this)">
-        <div class="imagem" style="
-          background: linear-gradient(${GRAD_IMG_QUIZZ}), url(${quizz.image}); 
-          background-position: center; 
-          background-size: cover">
-        </div>
+      <div class="quizz" name="${quizz.id}" onclick="abrirQuizz(this)"> 
+        <img src=${quizz.image} alt="Imagem do quizz" class="imagem"/>
+        <div class="gradiente"></div>
         <h6>${quizz.title}</h6>
       </div>
       `;
@@ -119,7 +120,7 @@ function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
   const elCabecalhoUsuario = document.querySelector('.cabecalho-quizzes-usuario');
   const elQuizzesUsuario = document.querySelector('.quizzes-usuario');
   const elQuizzesTodos = document.querySelector('.quizzes-todos');
-
+  const elLoading = document.querySelector('.loading'); 
   elQuizzesTodos.innerHTML = quizzesTodos;
 
   if (quizzesUsuario !== '') {
@@ -132,10 +133,15 @@ function renderizarListaQuizzes(quizzesUsuario, quizzesTodos) {
     elQuizzesUsuario.classList.add('ocultar');
     elCabecalhoUsuario.classList.add('ocultar');
   }
+  if(!elLoading.classList.contains('ocultar')) {
+    mostrarEsconderLoading();
+  }
 }
 
 function abrirQuizz(elemento) {
   mostrarEsconderLoading();
+  clearInterval(idIntervalQuizzesUsuario);
+  clearInterval(idIntervalQuizzesTodos);
   elQuizzAberto = elemento;
   idQuizzAberto = elemento.getAttribute('name');
   axios
@@ -143,10 +149,10 @@ function abrirQuizz(elemento) {
     .then((resposta) => {
       objQuizzAberto = resposta.data;
       renderizarQuizz(objQuizzAberto);
-      setTimeout(mostrarEsconderLoading, 3000);
+      //setTimeout(mostrarEsconderLoading, 3000);
     })
     .catch((erro) => {
-      console.log(erro);
+      alert("Não foi possível abrir o quizz, tente novamente!");
     });
 }
 
@@ -165,6 +171,7 @@ function renderizarQuizz(quizz) {
 
   elListaQuizzes.classList.add('ocultar');
   elCriacaoQuizz.classList.add('ocultar');
+  mostrarEsconderLoading();
   elPaginaQuizz.classList.remove('ocultar');
   elBanner.scrollIntoView(OPCOES_SCROLL);
 }
@@ -190,7 +197,7 @@ function renderizarRespostas(respostas) {
     const corretaOuIncorreta = resposta.isCorrectAnswer ? 'correta' : 'incorreta';
     elRespostas += `
     <li class="resposta ${corretaOuIncorreta}" onclick="selecionarResposta(this)">
-        <img src="${resposta.image}">
+        <img src="${resposta.image}"/>
         <span>${resposta.text}</span>
     </li>`;
   });
@@ -267,11 +274,10 @@ function renderizarBotoesDeNavegacao() {
   </button>
   `;
   navegacao.classList.remove('ocultar');
-  //navegacao.scrollIntoView({block: "end", behavior: "smooth", inline: "nearest"});
 }
 
 function reiniciarQuizz() {
-  document.querySelector('.pagina-quizz .banner').scrollIntoView({ block: 'start', behavior: 'smooth'}); //inline: "nearest"});
+  document.querySelector('.pagina-quizz .banner').scrollIntoView({ block: 'start', behavior: 'smooth'}); 
   qtyPerguntasRespondidas = 0;
   qtyRespostasCorretas = 0;
   abrirQuizz(elQuizzAberto);
@@ -307,6 +313,9 @@ function voltarParaHome() {
 
 // Tela 3 - Criação de Quizzes
 function criarOuEditarQuizz() {
+  mostrarEsconderLoading();
+  clearInterval(idIntervalQuizzesUsuario);
+  clearInterval(idIntervalQuizzesTodos);
   if (modoEdicao) {
     document.querySelector('.titulo-quizz').value = quizzEditar.title;
     document.querySelector('.url-imagem').value = quizzEditar.image;
@@ -317,6 +326,7 @@ function criarOuEditarQuizz() {
   const elCriacaoQuizz = document.querySelector('.criacao-quizz');
   const elListaQuizzes = document.querySelector('.lista-quizzes');
   elCriacaoQuizz.classList.remove('ocultar');
+  mostrarEsconderLoading();
   elListaQuizzes.classList.add('ocultar');
 }
 
@@ -598,6 +608,7 @@ function validarNiveisQuizz() {
 }
 
 function abrirSucessoCriacaoOuEdicaoQuizz() {
+  mostrarEsconderLoading();
   document.querySelector('.criacao-niveis-quizz').classList.add('ocultar');
   document.querySelector('.sucesso-quizz').classList.remove('ocultar');
   if (modoEdicao) {
@@ -619,8 +630,9 @@ function enviarQuizzProServidor() {
       limparNovoQuizz();
     })
     .catch(() => {
-      console.log('Não consegui enviar o quizz pra API!');
+      alert("Não foi possível salvar o quizz, tente novamente!");
       limparNovoQuizz();
+      mostrarEsconderLoading();
     });
 }
 
@@ -639,7 +651,7 @@ function enviarQuizzEditadoProServidor() {
       limparNovoQuizz();
     })
     .catch(() => {
-      console.log('Não consegui enviar o quizz editado pra API!');
+      alert("Não foi possível salvar as alterações do quizz, tente novamente!");
       modoEdicao = false;
       quizzEditar_localStorage = {};
       limparNovoQuizz();
@@ -672,17 +684,14 @@ function renderizarSucessoQuizz(idQuizzCriado) {
   sucessoQuizz.innerHTML = `
   <h5>Seu quizz está pronto!</h5>
   <div class="quizz-criado" name="${idQuizzCriado}" onclick="abrirQuizz(this)">
-    <div class="imagem" 
-      style="
-      background: linear-gradient(${GRAD_IMG_QUIZZ}), url(${novoQuizz.image}); 
-      background-position: center; 
-      background-size: cover">
-    </div>
+    <img src=${novoQuizz.image} alt="Imagem do quizz" class="imagem"/>
+    <div class="gradiente"></div>
     <h6>${novoQuizz.title}</h6>
   </div>
   <button class="reiniciar-btn" onclick="acessarQuizz()">Acessar Quizz</button>
   <button class="home-btn" onclick="voltarParaHome()">Voltar para home</button>
   `;
+  mostrarEsconderLoading();
 }
 
 function acessarQuizz() {
@@ -696,6 +705,8 @@ function acessarQuizz() {
 
 function editarQuizz(elemento, evento) {
   mostrarEsconderLoading();
+  clearInterval(idIntervalQuizzesUsuario);
+  clearInterval(idIntervalQuizzesTodos);
   evento.stopPropagation();
   modoEdicao = true;
   const idQuizzEditar = elemento.parentElement.parentElement.getAttribute('name');
@@ -707,15 +718,18 @@ function editarQuizz(elemento, evento) {
     .then((response) => {
       quizzEditar = response.data;
       criarOuEditarQuizz();
-      setTimeout(mostrarEsconderLoading, 3000);
+      mostrarEsconderLoading();
+      //setTimeout(mostrarEsconderLoading, 3000);
     })
     .catch(() => {
-      console.log('Não consegui obter o quizz para editar!');
+      alert("Não foi possível iniciar a edição do quizz, tente novamente!");
     });
 }
 
 function excluirQuizz(elemento, evento) {
   mostrarEsconderLoading();
+  clearInterval(idIntervalQuizzesUsuario);
+  clearInterval(idIntervalQuizzesTodos);
   evento.stopPropagation();
   if (confirm('Tem certeza que deseja excluir o quizz?')) {
     const idQuizzDeletar = elemento.parentElement.parentElement.getAttribute('name');
@@ -732,13 +746,14 @@ function excluirQuizz(elemento, evento) {
       })
       .then(() => {
         obterQuizzes();
-        setTimeout(mostrarEsconderLoading, 3000);
+        //setTimeout(mostrarEsconderLoading, 3000);
       })
       .catch((error) => {
-        console.log(error);
+        alert("Não foi possível excluir o quizz, tente novamente!");
       });
   } else {
-    setTimeout(mostrarEsconderLoading, 3000);
+    mostrarEsconderLoading();
+    //setTimeout(mostrarEsconderLoading, 3000);
   }
 }
 
