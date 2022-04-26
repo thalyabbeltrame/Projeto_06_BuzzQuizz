@@ -108,6 +108,7 @@
   bottom: 12px;
   left: 18px;
   word-wrap: break-word;
+  word-break: break-all;
 }
 
 .quizz .botoes {
