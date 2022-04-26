@@ -559,9 +559,15 @@ function validarNiveisQuizz() {
   const temPorcentagemMinimaInvalida = novoQuizz.levels.some(
     (nivel) => nivel.minValue === '' || isNaN(nivel.minValue) || nivel.minValue < 0 || nivel.minValue > 100
   );
+  const temMinValueDuplicado = !validaNiveisDuplicados(novoQuizz.levels);
   const naoTemNivelZero = novoQuizz.levels.every((nivel) => nivel.minValue !== 0);
   return (
-    temTituloInvalido || temURLImagemInvalida || temDescricaoInvalida || temPorcentagemMinimaInvalida || naoTemNivelZero
+    temTituloInvalido ||
+    temURLImagemInvalida ||
+    temDescricaoInvalida ||
+    temPorcentagemMinimaInvalida ||
+    naoTemNivelZero ||
+    temMinValueDuplicado
   );
 }
 
@@ -714,4 +720,10 @@ function validaURLInicio(stringURL) {
 function validaHexadecimal(str) {
   const reg = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
   return reg.test(str);
+}
+
+function validaNiveisDuplicados(niveis) {
+  const niveisMinValue = niveis.map((nivel) => nivel.minValue);
+  const niveisMinValueDiferentes = niveisMinValue.filter((nivel, index) => niveisMinValue.indexOf(nivel) === index);
+  return niveisMinValueDiferentes.length === niveisMinValue.length;
 }
